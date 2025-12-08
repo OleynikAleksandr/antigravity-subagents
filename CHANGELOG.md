@@ -2,6 +2,11 @@
 
 All notable changes to **Antigravity SubAgents** are documented here.
 
+## [0.0.5] - 2025-12-08
+
+### Documentation
+- **Prerequisites**: Added a section detailing the requirement for installed and authenticated **Codex CLI** and **Claude Code CLI**.
+
 ## [0.0.4] - 2025-12-08
 
 ### Documentation

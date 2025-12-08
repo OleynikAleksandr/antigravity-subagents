@@ -24,6 +24,15 @@
 
 ![Create SubAgent UI](docs/images/create-subagent-ui.png)
 
+## Prerequisites
+
+Before using this extension, ensure you have the following installed and authenticated:
+
+- **Codex CLI**: Required if you plan to use Codex-based Sub-Agents.
+- **Claude Code CLI**: Required if you plan to use Claude-based Sub-Agents.
+
+Both tools must be available in your system `PATH` and fully authenticated (logged in).
+
 ## Installation
 
 Download the latest `.vsix` release from [Releases](https://github.com/OleynikAleksandr/antigravity-subagents/releases) and install in VS Code:
@@ -79,8 +88,6 @@ Instructions: |
 ```
 
 ## Documentation
-
-- [Changelog](CHANGELOG.md)
 
 ## License
 
