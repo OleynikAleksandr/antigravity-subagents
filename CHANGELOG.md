@@ -2,6 +2,15 @@
 
 All notable changes to **Antigravity SubAgents** are documented here.
 
+## [0.0.9] - 2025-12-08
+
+### Changed
+- **User Interaction Protocol**: Improved instructions for Orchestrator when handling SubAgent questions. Now uses direct chat communication instead of `notify_user` tool for better UX.
+
+### Maintenance
+- **Cleanup**: Removed test files from repository.
+- **Git Ignore**: Added `CHANGELOG_ru.md` to .gitignore to keep localized docs local.
+
 ## [0.0.8] - 2025-12-08
 
 ### Fixed

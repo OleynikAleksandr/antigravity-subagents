@@ -2,7 +2,7 @@
   "name": "antigravity-subagents",
   "displayName": "SubAgent Manager",
   "description": "Manage Codex/Claude Sub-Agents via Antigravity (Gemini CLI)",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "publisher": "OleksandrOliinyk",
   "repository": {
     "type": "git",

@@ -2,7 +2,7 @@
 
 **VS Code Extension to empower Antigravity IDE's Orchestrator Agents to manage Sub-Agents (Codex CLI, Claude Code CLI).**
 
-![Version](https://img.shields.io/badge/version-0.0.6-blue)
+![Version](https://img.shields.io/badge/version-0.0.9-blue)
 ![VS Code](https://img.shields.io/badge/VS%20Code-1.85+-purple)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
