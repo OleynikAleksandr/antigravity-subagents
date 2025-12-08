@@ -2,6 +2,12 @@
 
 All notable changes to **Antigravity SubAgents** are documented here.
 
+## [0.0.3] - 2025-12-08
+
+### Documentation
+- **README**: Completely rewritten to reflect the new **Antigravity Orchestrator** architecture.
+- **Translation**: Updated `README_ru.md` with accurate Russian documentation.
+
 ## [0.0.2] - 2025-12-08
 
 ### Fixed

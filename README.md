@@ -1,28 +1,25 @@
-# SubAgent Manager
+# Antigravity SubAgents
 
-**VS Code Extension for managing AI Sub-Agents across CLI tools (Codex CLI, Claude Code CLI).**
+**VS Code Extension to empower Antigravity (Gemini CLI) as an Orchestrator for Sub-Agents (Codex CLI, Claude Code CLI).**
 
-![Version](https://img.shields.io/badge/version-0.0.20-blue)
+![Version](https://img.shields.io/badge/version-0.0.2-blue)
 ![VS Code](https://img.shields.io/badge/VS%20Code-1.85+-purple)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 ## Overview
 
-SubAgent Manager lets you create, organize, and deploy specialized AI assistants (Sub-Agents) that work within your existing AI CLI tools. Define an agent once, deploy it everywhere.
+**Antigravity SubAgents** turns your local Antigravity (Gemini CLI) into a powerful **Orchestrator**. It allows you to create, organize, and manage specialized Sub-Agents that are executed by other CLI tools (**Codex CLI** or **Claude Code CLI**), but controlled centrally by Antigravity.
 
 ### Key Features
 
-- **Visual Editor** — Create and edit SubAgents with a rich UI
-- **Library** — Personal collection of reusable SubAgents  
-- **Deploy** — One-click deploy to Project or Global scope
-- **Multi-CLI** — Works with Codex CLI and Claude Code CLI as Main Orchestrator Agents. Creates SubAgents for either Codex CLI or Claude Code CLI. Requires user authorization in Codex CLI and Claude Code CLI.
-- **Interactive Conversation** — SubAgents support full interactive dialogue, not just one-shot responses
-- **Slash Commands** — Auto-generated slash commands for manual SubAgent invocation:
-  - Codex CLI: `/prompts:subagent-{name}` (e.g., `/prompts:subagent-translator`)
-  - Claude Code: `/subagent-{name}` (e.g., `/subagent-translator`)
-- **Auto-Select Command** — Automatically creates `/subagent-auto` command that reminds the Orchestrator Agent to read the manifest and select the appropriate SubAgent (if not done automatically)
-- **Auto-Routing** — The Main Orchestrator Agent receives a global instruction to review the SubAgents Manifest and automatically delegate tasks to the most suitable SubAgent based on its specialization
-- **Import/Export** — Share SubAgents between users via `.subagent` files
+- **Orchestration** — Antigravity (Gemini CLI) acts as the Main Agent, delegating tasks to specialized Sub-Agents.
+- **Sub-Agent Vendors** — Create agents that run on **Codex CLI** or **Claude Code CLI**.
+- **Auto-Routing** — Automatically injects routing instructions into `~/.gemini/GEMINI.md`, enabling Antigravity to intelligently select the right agent for the job.
+- **Workflow Generation** — Automatically generates Slash Commands for Antigravity:
+  - **Global**: `~/.gemini/antigravity/global_workflows/`
+  - **Project**: `<project>/.agent/workflows/`
+- **Visual Editor** — Rich VS Code UI to create and manage agents.
+- **Sandbox Control** — Sub-Agents run with `danger-full-access` permissions, allowing them to effectively work on your project files when commanded.
 
 ![Create SubAgent UI](docs/images/create-subagent-ui.png)
 
@@ -35,41 +32,49 @@ Download the latest `.vsix` release from [Releases](https://github.com/OleynikAl
 
 ## Quick Start
 
-1. **Open** SubAgent Manager from the Activity Bar (MsA icon)
-2. **Create** a new SubAgent with name, description, triggers, and instructions
-3. **Deploy** to Project (current workspace) or Global (all projects)
-4. **Use** the SubAgent via slash command in Codex/Claude, or by mentioning trigger words to the Main Agent, or simply describe a task matching the SubAgent's description
+1. **Open** SubAgent Manager from the Activity Bar (MsA icon).
+2. **Create** a new SubAgent (e.g., "Translator").
+   - Select Vendor: `Codex` or `Claude`.
+   - Define Triggers: `translate`, `перевод`.
+3. **Deploy** to **Project** (current workspace) or **Global** (system-wide).
+4. **Use** in Antigravity (Gemini CLI):
+   - **Auto**: Just ask "Translate this file..." -> Antigravity will route it to your Sub-Agent.
+   - **Manual**: Use the generated slash command (e.g., `/subagent-translator`).
 
 ### Example: Translator SubAgent
 
 ```yaml
 Name: translator
-Triggers: Translates text and/or files to the specified language + translate, перевод, übersetzen
+Vendor: Codex
+Triggers: Translates text and/or files to the specified language
 Instructions: |
   You are a professional translator.
   Translate the given text to the requested language.
-  Preserve formatting and technical terms.
-  Save translations next to the original files with a language prefix.
+  Save translations next to the original files.
 ```
 
-After deploy, use in Codex CLI or Claude Code CLI:
-```
-/subagent-translator Translate this README to French
-```
+**Workflow:**
+1. You ask Antigravity: "Translate README.md to Russian".
+2. Antigravity reads `GEMINI.md` and finds the `translator` agent.
+3. Antigravity executes the Sub-Agent via `codex exec`.
+4. The Sub-Agent performs the work.
 
 ## Architecture
 
 ```
-~/.subagents/           # Global SubAgents storage
-├── manifest.json       # Registry of deployed agents
-└── {agent}/            # Agent directory
-    └── {agent}.md      # Agent instructions
+~/.subagents/                     # Global SubAgents Storage
+├── manifest.json                 # Registry of deployed agents
+└── {agent}/                      # Agent Directory (Instructions & State)
 
-~/.codex/prompts/       # Codex slash commands
-└── subagent-{name}.md  # Individual agent command
+~/.gemini/                        # Antigravity Configuration
+├── GEMINI.md                     # Auto-Routing Instructions
+└── antigravity/global_workflows/ # Global Slash Commands
+    └── subagent-{name}.md
 
-~/.claude/commands/     # Claude slash commands  
-└── subagent-{name}.md  # Individual agent command
+<ProjectRoot>/                    # Project Configuration
+├── .subagents/                   # Project SubAgents
+└── .agent/workflows/             # Project Slash Commands
+    └── subagent-{name}.md
 ```
 
 ## Documentation
