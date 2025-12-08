@@ -2,6 +2,11 @@
 
 All notable changes to **Antigravity SubAgents** are documented here.
 
+## [0.0.6] - 2025-12-08
+
+### Changed
+- **Icons**: Updated extension icons (logo).
+
 ## [0.0.5] - 2025-12-08
 
 ### Documentation
