@@ -2,6 +2,15 @@
 
 All notable changes to **Antigravity SubAgents** are documented here.
 
+## [0.0.8] - 2025-12-08
+
+### Fixed
+- **Codex CLI**: Removed invalid `-a on-request` flag from generated start commands. This fixes the "unexpected argument" error when launching subagents.
+
+### Changed
+- **Routing Protocol**: Updated `GEMINI.md` auto-routing instructions with a new **INTERACTION PROTOCOL**.
+- **Resume Command**: Explained how to handle SubAgent questions using `commands.resume`.
+
 ## [0.0.7] - 2025-12-08
 
 ### Changed

@@ -28,6 +28,10 @@ ${ROUTING_MARKER_START}
         *   You **MUST** delegate immediately using the \`commands.start\` from the manifest.
         *   **Do NOT** ask for confirmation.
         *   **Do NOT** attempt to "quickly fix" it yourself.
+    *   **INTERACTION PROTOCOL**:
+        *   **IF SubAgent asks a question**: You **MUST** answer it using \`commands.resume\`.
+            *   **IF you know the answer**: Answer directly using \`commands.resume\`.
+            *   **IF you DON'T know**: Ask the User via \`notify_user\`, get the answer, and THEN relay it using \`commands.resume\`.
     *   **IF NO MATCH**: Proceed with your own standard tools.
 
 **Philosophy**: "Never manually do what a SubAgent is configured to do."
