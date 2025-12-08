@@ -4,12 +4,10 @@ import { join } from "node:path";
 // biome-ignore lint/performance/noNamespaceImport: VS Code API requires namespace import
 import * as vscode from "vscode";
 import type { SubAgent } from "../models/sub-agent";
-import { AutoRoutingService } from "./auto-routing-service";
+import type { AutoRoutingService } from "./auto-routing-service";
 import {
-  CLAUDE_AUTO_COMMAND,
-  CODEX_AUTO_COMMAND,
-  generateClaudeIndividualCommand,
-  generateCodexIndividualCommand,
+  generateIndividualCommand,
+  SUBAGENT_AUTO_TEMPLATE,
 } from "./command-templates";
 
 /**
@@ -25,9 +23,15 @@ type ManifestFile = {
 };
 
 export class DeployService {
+  private readonly autoRoutingService: AutoRoutingService;
+
+  constructor(autoRoutingService: AutoRoutingService) {
+    this.autoRoutingService = autoRoutingService;
+  }
+
   /**
    * Deploy agent to project workspace (.subagents/)
-   * Creates slash commands for Claude in project, Codex only globally
+   * Creates slash commands in .agent/workflows/
    */
   async deployToProject(agent: SubAgent): Promise<void> {
     const workspaceFolders = vscode.workspace.workspaceFolders;
@@ -36,7 +40,6 @@ export class DeployService {
     }
 
     const rootPath = workspaceFolders[0].uri.fsPath;
-    const homeDir = homedir();
 
     // Deploy to .subagents/ folder
     const subagentsDir = join(rootPath, ".subagents");
@@ -55,20 +58,16 @@ export class DeployService {
     this._upsertAgentInManifest(manifest, agent, agentDir);
     await writeFile(manifestFile, JSON.stringify(manifest, null, 2), "utf-8");
 
-    // 4. Create slash commands
-    // Codex: ONLY global (~/.codex/prompts/) - Codex doesn't support project-level prompts
-    await this._createCodexCommands(homeDir, agent, agentDir);
-    // Claude: project-level (.claude/commands/)
-    await this._createClaudeCommands(rootPath, agent, agentDir);
+    // 4. Create slash commands in .agent/workflows/
+    await this._createProjectWorkflows(rootPath, agent, agentDir);
 
-    // 5. Ensure auto-routing instructions in global CLI config files
-    const autoRouting = new AutoRoutingService();
-    await autoRouting.ensureAutoRoutingInstructions();
+    // 5. Ensure auto-routing instructions in ~/.gemini/GEMINI.md
+    await this.autoRoutingService.ensureAutoRoutingInstructions();
   }
 
   /**
    * Deploy agent to global location (~/.subagents/)
-   * Creates global slash commands for both CLIs
+   * Creates slash commands in ~/.gemini/antigravity/global_workflows/
    */
   async deployToGlobal(agent: SubAgent): Promise<void> {
     const homeDir = homedir();
@@ -90,13 +89,11 @@ export class DeployService {
     this._upsertAgentInManifest(manifest, agent, agentDir);
     await writeFile(manifestFile, JSON.stringify(manifest, null, 2), "utf-8");
 
-    // 4. Create global slash commands for both CLIs
-    await this._createCodexCommands(homeDir, agent, agentDir);
-    await this._createClaudeGlobalCommands(homeDir, agent, agentDir);
+    // 4. Create global slash commands
+    await this._createGlobalWorkflows(homeDir, agent, agentDir);
 
-    // 5. Ensure auto-routing instructions in global CLI config files
-    const autoRouting = new AutoRoutingService();
-    await autoRouting.ensureAutoRoutingInstructions();
+    // 5. Ensure auto-routing instructions in ~/.gemini/GEMINI.md
+    await this.autoRoutingService.ensureAutoRoutingInstructions();
   }
 
   /**
@@ -127,6 +124,8 @@ export class DeployService {
     );
 
     // Replace $AGENT_DIR placeholder with actual path
+    // Also ensure we are using gemini format if not already
+    // (Assuming agent.commands come pre-formatted or we blindly trust them for now)
     const resolvedCommands = {
       start: agent.commands.start.replace(/\$AGENT_DIR/g, agentDir),
       resume: agent.commands.resume.replace(/\$AGENT_DIR/g, agentDir),
@@ -146,85 +145,60 @@ export class DeployService {
   }
 
   /**
-   * Create Codex slash commands (global only)
-   * - subagent-auto.md (auto-select)
-   * - subagent-{name}.md (individual)
+   * Create Project Slash Commands (Workflows)
+   * Location: .agent/workflows/
    */
-  private async _createCodexCommands(
-    homeDir: string,
-    agent: SubAgent,
-    agentDir: string
-  ): Promise<void> {
-    const codexPromptsDir = join(homeDir, ".codex", "prompts");
-    await mkdir(codexPromptsDir, { recursive: true });
-
-    // Auto-select command
-    await writeFile(
-      join(codexPromptsDir, "subagent-auto.md"),
-      CODEX_AUTO_COMMAND,
-      "utf-8"
-    );
-
-    // Individual command for this agent
-    await writeFile(
-      join(codexPromptsDir, `subagent-${agent.name}.md`),
-      generateCodexIndividualCommand(agent, agentDir),
-      "utf-8"
-    );
-  }
-
-  /**
-   * Create Claude slash commands in project
-   * - subagent-auto.md (auto-select)
-   * - subagent-{name}.md (individual)
-   */
-  private async _createClaudeCommands(
+  private async _createProjectWorkflows(
     rootPath: string,
     agent: SubAgent,
     agentDir: string
   ): Promise<void> {
-    const claudeCommandsDir = join(rootPath, ".claude", "commands");
-    await mkdir(claudeCommandsDir, { recursive: true });
+    const workflowsDir = join(rootPath, ".agent", "workflows");
+    await mkdir(workflowsDir, { recursive: true });
 
     // Auto-select command
     await writeFile(
-      join(claudeCommandsDir, "subagent-auto.md"),
-      CLAUDE_AUTO_COMMAND,
+      join(workflowsDir, "subagent-auto.md"),
+      SUBAGENT_AUTO_TEMPLATE,
       "utf-8"
     );
 
     // Individual command for this agent
     await writeFile(
-      join(claudeCommandsDir, `subagent-${agent.name}.md`),
-      generateClaudeIndividualCommand(agent, agentDir),
+      join(workflowsDir, `subagent-${agent.name}.md`),
+      generateIndividualCommand(agent, agentDir),
       "utf-8"
     );
   }
 
   /**
-   * Create Claude slash commands globally
-   * - subagent-auto.md (auto-select)
-   * - subagent-{name}.md (individual)
+   * Create Global Slash Commands (Workflows)
+   * Location: ~/.gemini/antigravity/global_workflows/
    */
-  private async _createClaudeGlobalCommands(
+  private async _createGlobalWorkflows(
     homeDir: string,
     agent: SubAgent,
     agentDir: string
   ): Promise<void> {
-    const claudeCommandsDir = join(homeDir, ".claude", "commands");
-    await mkdir(claudeCommandsDir, { recursive: true });
+    const workflowsDir = join(
+      homeDir,
+      ".gemini",
+      "antigravity",
+      "global_workflows"
+    );
+    await mkdir(workflowsDir, { recursive: true });
 
     // Auto-select command
     await writeFile(
-      join(claudeCommandsDir, "subagent-auto.md"),
-      CLAUDE_AUTO_COMMAND,
+      join(workflowsDir, "subagent-auto.md"),
+      SUBAGENT_AUTO_TEMPLATE,
       "utf-8"
     );
 
     // Individual command for this agent
     await writeFile(
-      join(claudeCommandsDir, `subagent-${agent.name}.md`),
-      generateClaudeIndividualCommand(agent, agentDir),
+      join(workflowsDir, `subagent-${agent.name}.md`),
+      generateIndividualCommand(agent, agentDir),
       "utf-8"
     );
   }

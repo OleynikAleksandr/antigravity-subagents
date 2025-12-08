@@ -1,7 +1,7 @@
 {
   "name": "antigravity-subagents",
   "displayName": "SubAgent Manager",
-  "description": "Manage CLI Sub-Agents inside VS Code",
+  "description": "Manage Codex/Claude Sub-Agents via Antigravity (Gemini CLI)",
   "version": "0.0.20",
   "publisher": "OleksandrOliinyk",
   "repository": {
@@ -45,7 +45,8 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
+    "compile": "tsc -p ./ && npm run build:webview",
+    "build:webview": "cd webview-ui && npm install && npm run build",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "npx ultracite check",

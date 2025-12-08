@@ -1,6 +1,6 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 
 /**
  * Marker to detect if auto-routing section already exists
@@ -9,32 +9,9 @@ const ROUTING_MARKER_START = "<!-- SUBAGENT-ROUTING -->";
 const ROUTING_MARKER_END = "<!-- /SUBAGENT-ROUTING -->";
 
 /**
- * Auto-routing section for Codex CLI (AGENTS.md)
+ * Auto-routing section for Antigravity (GEMINI.md)
  */
-const CODEX_ROUTING_SECTION = `
-${ROUTING_MARKER_START}
-## SubAgent Auto-Routing
-
-Before starting any task, check \`.subagents/manifest.json\` (project) or \`~/.subagents/manifest.json\` (global).
-
-If the user's request matches any SubAgent by name or description:
-1. Read the SubAgent instructions from \`instructionsPath\` in manifest
-2. Execute using \`commands.start\` from manifest
-3. Handle questions via \`commands.resume\`
-4. Report results to user
-
-**Do NOT ask for confirmation** — delegate and report.
-
-Available commands:
-- \`/subagent-auto\` — auto-select best SubAgent
-- \`/subagent-{name}\` — call specific SubAgent
-${ROUTING_MARKER_END}
-`;
-
-/**
- * Auto-routing section for Claude Code CLI (CLAUDE.md)
- */
-const CLAUDE_ROUTING_SECTION = `
+const GEMINI_ROUTING_SECTION = `
 ${ROUTING_MARKER_START}
 ## SubAgent Auto-Routing
 
@@ -65,16 +42,11 @@ export class AutoRoutingService {
   async ensureAutoRoutingInstructions(): Promise<void> {
     const homeDir = homedir();
 
-    await Promise.all([
-      this._ensureRoutingInFile(
-        join(homeDir, ".codex", "AGENTS.md"),
-        CODEX_ROUTING_SECTION
-      ),
-      this._ensureRoutingInFile(
-        join(homeDir, ".claude", "CLAUDE.md"),
-        CLAUDE_ROUTING_SECTION
-      ),
-    ]);
+    // Target only ~/.gemini/GEMINI.md
+    await this._ensureRoutingInFile(
+      join(homeDir, ".gemini", "GEMINI.md"),
+      GEMINI_ROUTING_SECTION
+    );
   }
 
   /**
@@ -90,6 +62,12 @@ export class AutoRoutingService {
       content = await readFile(filePath, "utf-8");
     } catch (_ignored) {
       // File doesn't exist, will create with routing section
+      // But first ensure directory exists
+      try {
+        await mkdir(dirname(filePath), { recursive: true });
+      } catch (err) {
+        console.error(`Failed to create directory for ${filePath}`, err);
+      }
     }
 
     // Check if already has routing section
@@ -98,7 +76,9 @@ export class AutoRoutingService {
     }
 
     // Append routing section
-    const newContent = content + routingSection;
+    // Ensure there is a newline before appending if file is not empty
+    const prefix = content && !content.endsWith("\n") ? "\n" : "";
+    const newContent = content + prefix + routingSection;
     await writeFile(filePath, newContent, "utf-8");
   }
 
@@ -109,10 +89,8 @@ export class AutoRoutingService {
   async removeAutoRoutingInstructions(): Promise<void> {
     const homeDir = homedir();
 
-    await Promise.all([
-      this._removeRoutingFromFile(join(homeDir, ".codex", "AGENTS.md")),
-      this._removeRoutingFromFile(join(homeDir, ".claude", "CLAUDE.md")),
-    ]);
+    // Remove from ~/.gemini/GEMINI.md
+    await this._removeRoutingFromFile(join(homeDir, ".gemini", "GEMINI.md"));
   }
 
   /**
@@ -141,12 +119,20 @@ export class AutoRoutingService {
     }
 
     // Remove from start marker to end marker (inclusive) plus trailing newline
+    // We want to remove the exact block we added
     const beforeSection = content.substring(0, startIdx);
-    const afterSection = content.substring(
-      endIdx + ROUTING_MARKER_END.length + 1
-    );
+    const afterSection = content.substring(endIdx + ROUTING_MARKER_END.length);
 
-    const newContent = beforeSection + afterSection;
-    await writeFile(filePath, `${newContent.trim()}\n`, "utf-8");
+    // Clean up extra newlines if they resulted from removal
+    let newContent = beforeSection + afterSection;
+
+    // If we left a trailing newline that wasn't there originally (or just cleanup)
+    // For safety, just trim end and ensure one newline if content remains
+    newContent = newContent.trim();
+    if (newContent.length > 0) {
+      newContent += "\n";
+    }
+
+    await writeFile(filePath, newContent, "utf-8");
   }
 }

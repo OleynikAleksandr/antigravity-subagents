@@ -114,7 +114,7 @@ export class WebviewProvider implements vscode.WebviewViewProvider {
     const assetsUri = vscode.Uri.joinPath(
       this._extensionUri,
       "out",
-      "webview",
+      "webview-ui",
       "assets"
     );
 

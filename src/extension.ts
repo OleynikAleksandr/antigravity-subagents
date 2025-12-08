@@ -1,5 +1,6 @@
 // biome-ignore lint/performance/noNamespaceImport: VS Code API
 import * as vscode from "vscode";
+import { AutoRoutingService } from "./core/auto-routing-service";
 import { DeployService } from "./core/deploy-service";
 import { DeployedService } from "./core/deployed-service";
 import { ExportImportService } from "./core/export-import-service";
@@ -12,8 +13,9 @@ export function activate(context: vscode.ExtensionContext) {
   console.log('Extension "antigravity-subagents" is now active!');
 
   // Initialize Core Services
+  const autoRoutingService = new AutoRoutingService();
   const subAgentService = new SubAgentService(context);
-  const deployService = new DeployService();
+  const deployService = new DeployService(autoRoutingService);
   const deployedService = new DeployedService();
   const exportImportService = new ExportImportService();
 
