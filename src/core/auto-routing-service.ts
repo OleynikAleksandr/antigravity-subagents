@@ -31,7 +31,7 @@ ${ROUTING_MARKER_START}
     *   **INTERACTION PROTOCOL**:
         *   **IF SubAgent asks a question**: You **MUST** answer it using \`commands.resume\`.
             *   **IF you know the answer**: Answer directly using \`commands.resume\`.
-            *   **IF you DON'T know**: Ask the User via \`notify_user\`, get the answer, and THEN relay it using \`commands.resume\`.
+            *   **IF you DON'T know**: Ask the User in chat, wait for their response, and THEN relay it to the SubAgent using \`commands.resume\`.
     *   **IF NO MATCH**: Proceed with your own standard tools.
 
 **Philosophy**: "Never manually do what a SubAgent is configured to do."
