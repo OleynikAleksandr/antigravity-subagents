@@ -1,0 +1,39 @@
+# OS
+.DS_Store
+
+# Logs
+/tmp/
+*.log
+
+# Dependencies
+node_modules/
+
+# Build
+out/
+dist/
+
+# IDE
+.idea/
+
+# Testing
+.vscode-test/
+
+# Releases
+*.vsix
+
+# Development files (not for GitHub)
+doc/
+.agent/
+.claude/
+.husky/
+.subagents/
+.vscode/
+.gemini/
+scripts/
+AGENTS.md
+biome.jsonc
+lefthook.yml
+.jscpd.json
+
+# Local docs
+README_ru.md

@@ -1,0 +1,451 @@
+/* 
+ * SubAgent Manager - Dark Theme
+ * Based on VS Code default dark colors
+ */
+
+:root {
+  /* VS Code Dark Theme Colors */
+  --vscode-bg: #1e1e1e;
+  --vscode-sidebar-bg: #252526;
+  --vscode-panel-bg: #1e1e1e;
+  --vscode-input-bg: #3c3c3c;
+  --vscode-input-border: #3c3c3c;
+  --vscode-button-primary: #0e639c;
+  --vscode-button-primary-hover: #1177bb;
+  --vscode-button-secondary: #3c3c3c;
+  --vscode-button-secondary-hover: #505050;
+  --vscode-text: #cccccc;
+  --vscode-text-muted: #969696;
+  --vscode-accent: #007acc;
+  --vscode-border: #3c3c3c;
+  --vscode-success: #4ec9b0;
+  --vscode-warning: #dcdcaa;
+  --vscode-error: #f14c4c;
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  /* Font sizes */
+  --font-sm: 12px;
+  --font-md: 14px;
+  --font-lg: 16px;
+  --font-xl: 20px;
+
+  /* Border radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+    Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  font-size: var(--font-md);
+  line-height: 1.5;
+  color: var(--vscode-text);
+  background-color: var(--vscode-bg);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Typography */
+h1,
+h2,
+h3 {
+  margin: 0 0 var(--spacing-md) 0;
+  color: var(--vscode-text);
+  font-weight: 600;
+}
+
+h1 {
+  font-size: var(--font-xl);
+}
+h2 {
+  font-size: var(--font-lg);
+}
+h3 {
+  font-size: var(--font-md);
+}
+
+p {
+  margin: 0 0 var(--spacing-sm) 0;
+  color: var(--vscode-text-muted);
+}
+
+/* Links */
+a {
+  color: var(--vscode-accent);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+/* Buttons */
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-md);
+  font-weight: 500;
+  font-family: inherit;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background-color: var(--vscode-button-primary);
+  color: white;
+}
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--vscode-button-primary-hover);
+}
+
+.btn-secondary {
+  background-color: var(--vscode-button-secondary);
+  color: var(--vscode-text);
+}
+.btn-secondary:hover:not(:disabled) {
+  background-color: var(--vscode-button-secondary-hover);
+}
+
+.btn-success {
+  background-color: #2e7d32;
+  color: white;
+}
+.btn-success:hover:not(:disabled) {
+  background-color: #388e3c;
+}
+
+.btn-danger {
+  background-color: #b71c1c;
+  color: white;
+}
+.btn-danger:hover:not(:disabled) {
+  background-color: #c62828;
+}
+
+.btn-large {
+  padding: var(--spacing-lg) var(--spacing-xl);
+  font-size: var(--font-lg);
+  border-radius: var(--radius-lg);
+  min-width: 180px;
+}
+
+/* Inputs */
+input,
+textarea,
+select {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-md);
+  font-family: inherit;
+  color: var(--vscode-text);
+  background-color: var(--vscode-input-bg);
+  border: 1px solid var(--vscode-input-border);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--vscode-accent);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--vscode-text-muted);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 120px;
+  font-family: "Fira Code", "Consolas", "Monaco", monospace;
+}
+
+label {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  font-size: var(--font-sm);
+  font-weight: 500;
+  color: var(--vscode-text);
+}
+
+/* Form groups */
+.form-group {
+  margin-bottom: var(--spacing-md);
+}
+
+.form-hint {
+  margin-top: var(--spacing-xs);
+  font-size: var(--font-sm);
+  color: var(--vscode-text-muted);
+}
+
+/* Radio buttons */
+.radio-group {
+  display: flex;
+  gap: var(--spacing-lg);
+}
+
+.radio-group label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  cursor: pointer;
+  font-weight: normal;
+}
+
+.radio-group input[type="radio"] {
+  width: auto;
+  margin: 0;
+}
+
+/* Cards */
+.card {
+  padding: var(--spacing-md);
+  background-color: var(--vscode-sidebar-bg);
+  border: 1px solid var(--vscode-border);
+  border-radius: var(--radius-lg);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-sm);
+}
+
+.card-title {
+  font-weight: 600;
+  color: var(--vscode-text);
+}
+
+.card-description {
+  color: var(--vscode-text-muted);
+  font-size: var(--font-sm);
+}
+
+.card-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--vscode-border);
+}
+
+/* Badge */
+.badge {
+  display: inline-flex;
+  padding: 2px 8px;
+  font-size: var(--font-sm);
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  background-color: var(--vscode-button-secondary);
+  color: var(--vscode-text);
+}
+
+.badge-codex {
+  background-color: #1e3a5f;
+  color: #4fc3f7;
+}
+
+.badge-claude {
+  background-color: #3e2723;
+  color: #ffab91;
+}
+
+/* Layout */
+.container {
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--spacing-lg);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.back-button {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-sm);
+}
+
+/* Read-only code block */
+.code-block {
+  padding: var(--spacing-md);
+  font-family: "Fira Code", "Consolas", "Monaco", monospace;
+  font-size: var(--font-sm);
+  background-color: #1a1a1a;
+  border: 1px solid var(--vscode-border);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+}
+
+.code-block .label {
+  color: var(--vscode-success);
+  font-weight: 600;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+}
+
+.modal {
+  width: 90%;
+  max-width: 400px;
+  padding: var(--spacing-lg);
+  background-color: var(--vscode-sidebar-bg);
+  border: 1px solid var(--vscode-border);
+  border-radius: var(--radius-lg);
+}
+
+.modal-title {
+  margin-bottom: var(--spacing-md);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-lg);
+}
+
+/* Utility classes */
+.flex {
+  display: flex;
+}
+.flex-col {
+  flex-direction: column;
+}
+.items-center {
+  align-items: center;
+}
+.justify-center {
+  justify-content: center;
+}
+.justify-between {
+  justify-content: space-between;
+}
+.gap-sm {
+  gap: var(--spacing-sm);
+}
+.gap-md {
+  gap: var(--spacing-md);
+}
+.gap-lg {
+  gap: var(--spacing-lg);
+}
+.mt-md {
+  margin-top: var(--spacing-md);
+}
+.mb-md {
+  margin-bottom: var(--spacing-md);
+}
+.text-center {
+  text-align: center;
+}
+.text-muted {
+  color: var(--vscode-text-muted);
+}
+.w-full {
+  width: 100%;
+}
+
+/* Toolbar */
+.toolbar {
+  display: flex;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  margin-top: var(--spacing-md);
+  background-color: var(--vscode-sidebar-bg);
+  border: 1px solid var(--vscode-border);
+  border-radius: var(--radius-lg);
+  flex-wrap: wrap;
+  position: sticky;
+  bottom: var(--spacing-md);
+}
+
+/* Selectable cards */
+.card-selectable {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  transition: border-color 0.15s ease;
+}
+
+.card-selectable:hover {
+  border-color: var(--vscode-accent);
+}
+
+.card-checkbox {
+  display: flex;
+  align-items: center;
+  padding-top: 2px;
+  flex-shrink: 0;
+}
+
+.card-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: var(--vscode-accent);
+}
+
+.card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-selectable .card-header {
+  margin-bottom: 0;
+}
+
+/* Select All row - aligned with card checkboxes */
+.selectall-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+}

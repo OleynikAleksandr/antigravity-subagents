@@ -1,0 +1,33 @@
+*
+!package.json
+!README.md
+!LICENSE
+!LICENSE.md
+!LICENSE.txt
+!/out/**
+!/resources/**
+!/webview-ui/dist/**
+
+# Exclude source maps if we want smaller build, but usually good for debugging. 
+# Re-enable if user complains about size.
+# !/**/*.map
+
+# Explicitly exclude specific dev/test files that might be caught in included dirs
+src/
+doc/
+scripts/
+.agent/
+.codex/
+.claude/
+.subagents/
+.husky/
+.github/
+.vscode-test/
+.vscode/
+node_modules/
+.gitignore
+.jscpd.json
+.vscodeignore
+tsconfig.json
+vite.config.ts
+webview-ui/
