@@ -18,7 +18,7 @@ export const HomeScreen = ({
   >
     <h1 className="mb-md text-center">SubAgent Manager</h1>
     <p className="mb-md text-center text-muted">
-      Create and manage Codex/Claude Sub-Agents for Antigravity (Gemini CLI)
+      Create and manage Codex/Claude Sub-Agents for Antigravity IDE
     </p>
 
     <div className="mt-md flex flex-col gap-md" style={{ width: "280px" }}>

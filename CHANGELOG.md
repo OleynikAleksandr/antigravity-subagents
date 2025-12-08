@@ -2,6 +2,11 @@
 
 All notable changes to **Antigravity SubAgents** are documented here.
 
+## [0.0.10] - 2025-12-08
+
+### Fixed
+- **Terminology**: Corrected references from "Antigravity (Gemini CLI)" to "Antigravity IDE" across extension metadata, UI, and code comments for accurate product identification.
+
 ## [0.0.9] - 2025-12-08
 
 ### Changed

@@ -1,7 +1,7 @@
 import type { SubAgent } from "../models/sub-agent";
 
 /**
- * Generic slash command template for Antigravity (Gemini CLI)
+ * Generic slash command template for Antigravity IDE
  * Used for auto-routing via subagent-auto.md
  */
 export const SUBAGENT_AUTO_TEMPLATE = `---
