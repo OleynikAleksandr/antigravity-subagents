@@ -2,6 +2,11 @@
 
 All notable changes to **Antigravity SubAgents** are documented here.
 
+## [0.0.7] - 2025-12-08
+
+### Changed
+- **SubAgent Routing**: Implemented strict "Capability Scan" protocol. Prevents Orchestrator from doing manual work if a suitable SubAgent exists.
+
 ## [0.0.6] - 2025-12-08
 
 ### Changed

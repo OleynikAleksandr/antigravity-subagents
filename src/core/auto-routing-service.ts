@@ -13,21 +13,24 @@ const ROUTING_MARKER_END = "<!-- /SUBAGENT-ROUTING -->";
  */
 const GEMINI_ROUTING_SECTION = `
 ${ROUTING_MARKER_START}
-## SubAgent Auto-Routing
+# 🚦 CRITICAL: SUBAGENT DELEGATION PROTOCOL
 
-Before starting any task, check \`.subagents/manifest.json\` (project) or \`~/.subagents/manifest.json\` (global).
+**PRIORITY 0 (HIGHEST):** Before analyzing the user request depth or planning, you MUST perform a "Capability Scan":
 
-If the user's request matches any SubAgent by name or description:
-1. Read the SubAgent instructions from \`instructionsPath\` in manifest
-2. Execute using \`commands.start\` from manifest
-3. Handle questions via \`commands.resume\`
-4. Report results to user
+1.  🔍 **SCAN**: Check for manifests in these locations:
+    *   **Project**: \`./.subagents/manifest.json\` (relative to workspace root)
+    *   **Global**: \`~/.subagents/manifest.json\`
+2.  🧩 **MATCH**: Check if the User Request semantically overlaps with ANY Agent's \`description\` found in the manifests.
+    *   *Example:* Request "Translate file X" matches Agent "Translator".
+    *   *Example:* Request "Fix these bugs" matches Agent "Debugger".
+3.  🛑 **DECISION**:
+    *   **IF MATCH FOUND**: You are **FORBIDDEN** from performing the task yourself with your own tools.
+        *   You **MUST** delegate immediately using the \`commands.start\` from the manifest.
+        *   **Do NOT** ask for confirmation.
+        *   **Do NOT** attempt to "quickly fix" it yourself.
+    *   **IF NO MATCH**: Proceed with your own standard tools.
 
-**Do NOT ask for confirmation** — delegate and report.
-
-Available commands:
-- \`/subagent-auto\` — auto-select best SubAgent
-- \`/subagent-{name}\` — call specific SubAgent
+**Philosophy**: "Never manually do what a SubAgent is configured to do."
 ${ROUTING_MARKER_END}
 `;
 
