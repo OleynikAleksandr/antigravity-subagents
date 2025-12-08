@@ -1,25 +1,26 @@
 # Antigravity SubAgents
 
-**VS Code Extension to empower Antigravity (Gemini CLI) as an Orchestrator for Sub-Agents (Codex CLI, Claude Code CLI).**
+**VS Code Extension to empower Antigravity IDE's Orchestrator Agents to manage Sub-Agents (Codex CLI, Claude Code CLI).**
 
-![Version](https://img.shields.io/badge/version-0.0.2-blue)
+![Version](https://img.shields.io/badge/version-0.0.3-blue)
 ![VS Code](https://img.shields.io/badge/VS%20Code-1.85+-purple)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 ## Overview
 
-**Antigravity SubAgents** turns your local Antigravity (Gemini CLI) into a powerful **Orchestrator**. It allows you to create, organize, and manage specialized Sub-Agents that are executed by other CLI tools (**Codex CLI** or **Claude Code CLI**), but controlled centrally by Antigravity.
+**Antigravity SubAgents** provides the infrastructure for **Antigravity IDE** to utilize specialized Sub-Agents. In Antigravity, multiple Main Agents can act as **Orchestrators**. This extension allows these Orchestrators to delegate tasks to Sub-Agents that execute via other CLI tools (**Codex CLI** or **Claude Code CLI**).
 
 ### Key Features
 
-- **Orchestration** — Antigravity (Gemini CLI) acts as the Main Agent, delegating tasks to specialized Sub-Agents.
+- **Orchestration** — Enables Main Agents in Antigravity to act as Orchestrators, intelligently delegating tasks.
 - **Sub-Agent Vendors** — Create agents that run on **Codex CLI** or **Claude Code CLI**.
-- **Auto-Routing** — Automatically injects routing instructions into `~/.gemini/GEMINI.md`, enabling Antigravity to intelligently select the right agent for the job.
-- **Workflow Generation** — Automatically generates Slash Commands for Antigravity:
+- **Focused Execution** — Sub-Agents are launched **ONLY with their specific, narrow instructions**. This ensures they stay focused on the task without the distraction of general chat history or conflicting directives.
+- **Auto-Routing** — Automatically injects routing instructions into `~/.gemini/GEMINI.md`, enabling the Orchestrator to find and select the right tool.
+- **Workflow Generation** — Automatically generates Slash Commands for the Orchestrator:
   - **Global**: `~/.gemini/antigravity/global_workflows/`
   - **Project**: `<project>/.agent/workflows/`
 - **Visual Editor** — Rich VS Code UI to create and manage agents.
-- **Sandbox Control** — Sub-Agents run with `danger-full-access` permissions, allowing them to effectively work on your project files when commanded.
+- **Sandbox Control** — Sub-Agents run with `danger-full-access` permissions, allowing them to effectively read/write project files when commanded by the Orchestrator.
 
 ![Create SubAgent UI](docs/images/create-subagent-ui.png)
 
@@ -37,8 +38,8 @@ Download the latest `.vsix` release from [Releases](https://github.com/OleynikAl
    - Select Vendor: `Codex` or `Claude`.
    - Define Triggers: `translate`, `перевод`.
 3. **Deploy** to **Project** (current workspace) or **Global** (system-wide).
-4. **Use** in Antigravity (Gemini CLI):
-   - **Auto**: Just ask "Translate this file..." -> Antigravity will route it to your Sub-Agent.
+4. **Use** in Antigravity IDE:
+   - **Auto**: Just ask the Orchestrator "Translate this file..." -> It will route the task to your Sub-Agent.
    - **Manual**: Use the generated slash command (e.g., `/subagent-translator`).
 
 ### Example: Translator SubAgent
@@ -54,10 +55,10 @@ Instructions: |
 ```
 
 **Workflow:**
-1. You ask Antigravity: "Translate README.md to Russian".
-2. Antigravity reads `GEMINI.md` and finds the `translator` agent.
-3. Antigravity executes the Sub-Agent via `codex exec`.
-4. The Sub-Agent performs the work.
+1. You ask the Orchestrator: "Translate README.md to Russian".
+2. The Orchestrator reads `GEMINI.md` and finds the `translator` agent.
+3. The Orchestrator delegates the task.
+4. The Sub-Agent starts with **only the translator instructions**, ensuring a perfect result.
 
 ## Architecture
 

@@ -2,6 +2,12 @@
 
 All notable changes to **Antigravity SubAgents** are documented here.
 
+## [0.0.4] - 2025-12-08
+
+### Documentation
+- **Clarification**: Refined `README` to correctly identify **Antigravity** as an IDE and Main Agents as **Orchestrators**.
+- **Features**: Highlighted "Focused Execution" as a key benefit — Sub-Agents run only with narrow instructions.
+
 ## [0.0.3] - 2025-12-08
 
 ### Documentation
