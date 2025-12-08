@@ -2,6 +2,12 @@
 
 All notable changes to **Antigravity SubAgents** are documented here.
 
+## [0.0.2] - 2025-12-08
+
+### Fixed
+- **Sandbox Permissions**: Sub-Agents now run with `danger-full-access` to allow file creation in the project root.
+- **Manifest**: Updated default `translator` agent configuration.
+
 ## [0.0.1] - 2025-12-08
 
 ### Added
