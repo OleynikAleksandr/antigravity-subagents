@@ -2,7 +2,7 @@
 
 **VS Code Extension to empower Antigravity IDE's Orchestrator Agents to manage Sub-Agents (Codex CLI, Claude Code CLI).**
 
-![Version](https://img.shields.io/badge/version-0.0.14-blue)
+![Version](https://img.shields.io/badge/version-0.0.23-blue)
 ![VS Code](https://img.shields.io/badge/VS%20Code-1.85+-purple)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -15,18 +15,13 @@
 - **Orchestration** — Enables Main Agents in Antigravity to act as Orchestrators, intelligently delegating tasks.
 - **Sub-Agent Vendors** — Create agents that run on **Codex CLI** or **Claude Code CLI**.
 - **Focused Execution** — Sub-Agents are launched **ONLY with their specific, narrow instructions**. This ensures they stay focused on the task without the distraction of general chat history or conflicting directives.
+- **Real-time Logging (Codex)** — When a Codex SubAgent runs, a Terminal window automatically opens showing the full verbose output (thinking, tool calls, exec logs). The Orchestrator receives **only the final answer** to save tokens, while you can observe the full work in real-time.
 - **Auto-Routing** — Automatically injects routing instructions into `~/.gemini/GEMINI.md`, enabling the Orchestrator to find and select the right tool.
 - **Workflow Generation** — Automatically generates Slash Commands for the Orchestrator:
   - **Global**: `~/.gemini/antigravity/global_workflows/`
   - **Project**: `<project>/.agent/workflows/`
 - **Visual Editor** — Rich VS Code UI to create and manage agents.
 - **Full Autonomy** — Codex Sub-Agents run with `--dangerously-bypass-approvals-and-sandbox`, giving them complete freedom to execute any operations without permission prompts.
-- **Clean Orchestrator Output** — When the Orchestrator calls a SubAgent, it receives **only the final answer**, not the entire stream of internal processing. Without this, the orchestrator would see:
-  - `thinking` blocks with the SubAgent's internal reasoning
-  - `exec` logs showing every shell command and its output
-  - Intermediate messages and token counts
-  
-  This noise pollutes the orchestrator's context and makes responses unparseable. With Clean Output enabled, stderr is redirected to `/dev/null`, ensuring reliable agent-to-agent communication.
 
 ![Create SubAgent UI](docs/images/create-subagent-ui.png)
 
