@@ -22,8 +22,8 @@ const generateCommands = (
 
   if (vendor === "codex") {
     return {
-      start: `cd "${agentDir}" && codex exec --skip-git-repo-check --sandbox danger-full-access "First, read ${instructionsFile}. Then: $TASK"`,
-      resume: `cd "${agentDir}" && codex exec --sandbox danger-full-access resume $SESSION_ID "$ANSWER"`,
+      start: `cd "${agentDir}" && codex exec --skip-git-repo-check --dangerously-bypass-approvals-and-sandbox "First, read ${instructionsFile}. Then: $TASK"`,
+      resume: `cd "${agentDir}" && codex exec --dangerously-bypass-approvals-and-sandbox resume $SESSION_ID "$ANSWER"`,
     };
   }
   return {

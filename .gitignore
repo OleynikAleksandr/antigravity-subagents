@@ -23,7 +23,6 @@ dist/
 
 # Development files (not for GitHub)
 doc/
-.agent/
 .claude/
 .husky/
 .subagents/
