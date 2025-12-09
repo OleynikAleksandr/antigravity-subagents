@@ -9,26 +9,19 @@ type AgentEditorProps = {
 };
 
 /**
- * Generate CLI commands based on agent name and vendor
- * Note: $AGENT_DIR is a placeholder that gets replaced with actual path during deploy
+ * Generate CLI commands preview based on agent name and vendor
+ * Note: $SUBAGENTS_DIR is a placeholder that gets replaced with actual path during deploy
  */
 const generateCommands = (
   name: string,
   vendor: SubAgentVendor
 ): { start: string; resume: string } => {
   // Use placeholder - will be replaced with real path during deploy
-  const agentDir = "$AGENT_DIR";
-  const instructionsFile = `${name}.md`;
+  const subagentsDir = "$SUBAGENTS_DIR";
 
-  if (vendor === "codex") {
-    return {
-      start: `cd "${agentDir}" && codex exec --skip-git-repo-check --dangerously-bypass-approvals-and-sandbox "First, read ${instructionsFile}. Then: $TASK" 2>/dev/null`,
-      resume: `cd "${agentDir}" && codex exec --dangerously-bypass-approvals-and-sandbox resume $SESSION_ID "$ANSWER" 2>/dev/null`,
-    };
-  }
   return {
-    start: `cd "${agentDir}" && claude -p "First, read ${instructionsFile}. Then: $TASK" --dangerously-skip-permissions 2>/dev/null`,
-    resume: `cd "${agentDir}" && claude --continue "$ANSWER" --dangerously-skip-permissions 2>/dev/null`,
+    start: `"${subagentsDir}/start.sh" ${vendor} ${name} "$TASK"`,
+    resume: `"${subagentsDir}/resume.sh" ${vendor} ${name} $SESSION_ID "$ANSWER"`,
   };
 };
 

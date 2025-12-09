@@ -10,6 +10,7 @@ import {
   generateIndividualCommand,
   SUBAGENT_AUTO_TEMPLATE,
 } from "./command-templates";
+import { ensureScripts } from "./script-generator";
 
 /**
  * Manifest file structure for .subagents/manifest.json
@@ -48,15 +49,16 @@ export class DeployService {
     const agentFile = join(agentDir, `${agent.name}.md`);
     const manifestFile = join(subagentsDir, "manifest.json");
 
-    // 1. Create directories
+    // 1. Create directories and scripts
     await mkdir(agentDir, { recursive: true });
+    await ensureScripts(subagentsDir);
 
     // 2. Write instructions file
     await writeFile(agentFile, agent.instructions, "utf-8");
 
-    // 3. Update manifest.json - resolves $AGENT_DIR to actual path
+    // 3. Update manifest.json
     const manifest = await this._loadOrCreateManifest(manifestFile);
-    this._upsertAgentInManifest(manifest, agent, agentDir);
+    this._upsertAgentInManifest(manifest, agent, subagentsDir);
     await writeFile(manifestFile, JSON.stringify(manifest, null, 2), "utf-8");
 
     // 4. Create slash commands in .agent/workflows/
@@ -79,15 +81,16 @@ export class DeployService {
     const agentFile = join(agentDir, `${agent.name}.md`);
     const manifestFile = join(subagentsDir, "manifest.json");
 
-    // 1. Create directories
+    // 1. Create directories and scripts
     await mkdir(agentDir, { recursive: true });
+    await ensureScripts(subagentsDir);
 
     // 2. Write instructions file
     await writeFile(agentFile, agent.instructions, "utf-8");
 
-    // 3. Update manifest.json - resolves $AGENT_DIR to actual path
+    // 3. Update manifest.json
     const manifest = await this._loadOrCreateManifest(manifestFile);
-    this._upsertAgentInManifest(manifest, agent, agentDir);
+    this._upsertAgentInManifest(manifest, agent, subagentsDir);
     await writeFile(manifestFile, JSON.stringify(manifest, null, 2), "utf-8");
 
     // 4. Create global slash commands
@@ -113,23 +116,22 @@ export class DeployService {
 
   /**
    * Update or add agent in manifest
-   * Regenerates commands to ensure they always have the latest format (including 2>/dev/null)
+   * Generates commands pointing to start.sh/resume.sh scripts
    */
   private _upsertAgentInManifest(
     manifest: ManifestFile,
     agent: SubAgent,
-    agentDir: string
+    subagentsDir: string
   ): void {
     const existingIndex = manifest.agents.findIndex(
       (a) => a.name === agent.name
     );
 
-    // Always regenerate commands to ensure latest format
-    // This guarantees 2>/dev/null is included for clean orchestrator output
+    // Generate commands pointing to scripts
     const resolvedCommands = generateCommands(
       agent.name,
       agent.vendor,
-      agentDir
+      subagentsDir
     );
 
     const agentEntry = {

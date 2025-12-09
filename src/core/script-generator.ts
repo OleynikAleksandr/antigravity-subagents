@@ -1,0 +1,73 @@
+import { chmod, mkdir, writeFile } from "node:fs/promises";
+import { join } from "node:path";
+
+/**
+ * Content of start.sh script
+ * Clears log file on new session start
+ */
+const START_SCRIPT = `#!/bin/bash
+VENDOR="$1"
+AGENT="$2"
+TASK="$3"
+
+SUBAGENTS_DIR="$(dirname "$0")"
+AGENT_DIR="$SUBAGENTS_DIR/$AGENT"
+LOG_FILE="$SUBAGENTS_DIR/subagent.log"
+
+# Clear log for new session
+echo "=== [$AGENT] START $(date +%H:%M:%S) ===" > "$LOG_FILE"
+
+cd "$AGENT_DIR"
+
+if [ "$VENDOR" = "codex" ]; then
+  codex exec --skip-git-repo-check --dangerously-bypass-approvals-and-sandbox \\
+    "First, read \${AGENT}.md. Then: $TASK" 2>>"$LOG_FILE"
+else
+  claude -p "First, read \${AGENT}.md. Then: $TASK" \\
+    --dangerously-skip-permissions 2>>"$LOG_FILE"
+fi
+`;
+
+/**
+ * Content of resume.sh script
+ * Appends to log file (same session continues)
+ */
+const RESUME_SCRIPT = `#!/bin/bash
+VENDOR="$1"
+AGENT="$2"
+SESSION_ID="$3"
+ANSWER="$4"
+
+SUBAGENTS_DIR="$(dirname "$0")"
+AGENT_DIR="$SUBAGENTS_DIR/$AGENT"
+LOG_FILE="$SUBAGENTS_DIR/subagent.log"
+
+# Append to log (same session)
+echo "=== [$AGENT] RESUME $(date +%H:%M:%S) ===" >> "$LOG_FILE"
+
+cd "$AGENT_DIR"
+
+if [ "$VENDOR" = "codex" ]; then
+  codex exec --dangerously-bypass-approvals-and-sandbox \\
+    resume "$SESSION_ID" "$ANSWER" 2>>"$LOG_FILE"
+else
+  claude --continue "$ANSWER" --dangerously-skip-permissions 2>>"$LOG_FILE"
+fi
+`;
+
+/**
+ * Ensure start.sh and resume.sh scripts exist in subagents directory
+ */
+export async function ensureScripts(subagentsDir: string): Promise<void> {
+  await mkdir(subagentsDir, { recursive: true });
+
+  const startPath = join(subagentsDir, "start.sh");
+  const resumePath = join(subagentsDir, "resume.sh");
+
+  await writeFile(startPath, START_SCRIPT, "utf-8");
+  await writeFile(resumePath, RESUME_SCRIPT, "utf-8");
+
+  // Make scripts executable
+  await chmod(startPath, 0o755);
+  await chmod(resumePath, 0o755);
+}
