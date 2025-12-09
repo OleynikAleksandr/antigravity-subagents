@@ -78,13 +78,14 @@ AGENT_DIR="$SUBAGENTS_DIR/$AGENT"
 LOG_FILE="$SUBAGENTS_DIR/subagent.log"
 TEMP_OUTPUT=$(mktemp)
 
-# Append to log (same session)
-echo "=== [$AGENT] RESUME $(date +%H:%M:%S) ===" >> "$LOG_FILE"
-
 cd "$AGENT_DIR"
 
 if [ "$VENDOR" = "codex" ]; then
-  # CODEX: use resume command
+  # CODEX: use resume command with session_id
+  
+  # Append to log (same session)
+  echo "=== [$AGENT] RESUME $(date +%H:%M:%S) ===" >> "$LOG_FILE"
+  
   codex exec --dangerously-bypass-approvals-and-sandbox \\
     resume "$SESSION_ID" "$ANSWER" 2>"$TEMP_OUTPUT"
   
@@ -96,7 +97,7 @@ if [ "$VENDOR" = "codex" ]; then
   
 else
   # CLAUDE: simple text output with --continue
-  # Note: Claude uses --continue instead of session_id for resuming
+  # No log - just direct output
   claude -p "$ANSWER" --dangerously-skip-permissions --continue
   
   # Claude doesn't output session_id in text mode
