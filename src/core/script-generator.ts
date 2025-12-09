@@ -3,7 +3,7 @@ import { join } from "node:path";
 
 /**
  * Content of start.sh script
- * Clears log file on new session start
+ * Creates log file, opens Terminal with tail, then runs SubAgent
  */
 const START_SCRIPT = `#!/bin/bash
 VENDOR="$1"
@@ -14,8 +14,11 @@ SUBAGENTS_DIR="$(dirname "$0")"
 AGENT_DIR="$SUBAGENTS_DIR/$AGENT"
 LOG_FILE="$SUBAGENTS_DIR/subagent.log"
 
-# Clear log for new session
+# Create/clear log file for new session
 echo "=== [$AGENT] START $(date +%H:%M:%S) ===" > "$LOG_FILE"
+
+# Open Terminal.app with tail -f (runs in background, won't block)
+osascript -e "tell app \\"Terminal\\" to do script \\"tail -n 200 -f '$LOG_FILE'\\"" &>/dev/null &
 
 cd "$AGENT_DIR"
 
