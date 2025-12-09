@@ -3,7 +3,8 @@ import { join } from "node:path";
 
 /**
  * Content of start.sh script
- * Creates log file, opens Terminal with tail, then runs SubAgent
+ * Creates log file, opens Terminal with tail, runs SubAgent,
+ * extracts session_id from stderr and appends it to stdout
  */
 const START_SCRIPT = `#!/bin/bash
 VENDOR="$1"
@@ -13,6 +14,7 @@ TASK="$3"
 SUBAGENTS_DIR="$(dirname "$0")"
 AGENT_DIR="$SUBAGENTS_DIR/$AGENT"
 LOG_FILE="$SUBAGENTS_DIR/subagent.log"
+TEMP_STDERR=$(mktemp)
 
 # Create/clear log file for new session
 echo "=== [$AGENT] START $(date +%H:%M:%S) ===" > "$LOG_FILE"
@@ -25,12 +27,26 @@ end tell" &>/dev/null &
 
 cd "$AGENT_DIR"
 
+# Run SubAgent, capture stderr separately
 if [ "$VENDOR" = "codex" ]; then
   codex exec --skip-git-repo-check --dangerously-bypass-approvals-and-sandbox \\
-    "First, read \${AGENT}.md. Then: $TASK" 2>>"$LOG_FILE"
+    "First, read \${AGENT}.md. Then: $TASK" 2>"$TEMP_STDERR"
 else
   claude -p "First, read \${AGENT}.md. Then: $TASK" \\
-    --dangerously-skip-permissions 2>>"$LOG_FILE"
+    --dangerously-skip-permissions 2>"$TEMP_STDERR"
+fi
+
+# Extract session_id from stderr (Codex format: "session id: UUID")
+SESSION_ID=$(grep -oE "session id: [0-9a-f-]+" "$TEMP_STDERR" | head -1 | cut -d' ' -f3)
+
+# Append stderr to log file
+cat "$TEMP_STDERR" >> "$LOG_FILE"
+rm -f "$TEMP_STDERR"
+
+# Output session_id marker for orchestrator to parse
+if [ -n "$SESSION_ID" ]; then
+  echo ""
+  echo "[SESSION_ID: $SESSION_ID]"
 fi
 `;
 
