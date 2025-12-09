@@ -10,6 +10,7 @@ import {
   generateIndividualCommand,
   SUBAGENT_AUTO_TEMPLATE,
 } from "./command-templates";
+import { ensureLogTerminalOpen } from "./log-terminal-service";
 import { ensureScripts } from "./script-generator";
 
 /**
@@ -66,6 +67,9 @@ export class DeployService {
 
     // 5. Ensure auto-routing instructions in ~/.gemini/GEMINI.md
     await this.autoRoutingService.ensureAutoRoutingInstructions();
+
+    // 6. Open log terminal for monitoring
+    ensureLogTerminalOpen(subagentsDir);
   }
 
   /**
@@ -98,6 +102,9 @@ export class DeployService {
 
     // 5. Ensure auto-routing instructions in ~/.gemini/GEMINI.md
     await this.autoRoutingService.ensureAutoRoutingInstructions();
+
+    // 6. Open log terminal for monitoring
+    ensureLogTerminalOpen(subagentsDir);
   }
 
   /**
