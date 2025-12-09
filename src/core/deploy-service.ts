@@ -5,6 +5,7 @@ import { join } from "node:path";
 import * as vscode from "vscode";
 import type { SubAgent } from "../models/sub-agent";
 import type { AutoRoutingService } from "./auto-routing-service";
+import { generateCommands } from "./command-generator";
 import {
   generateIndividualCommand,
   SUBAGENT_AUTO_TEMPLATE,
@@ -112,7 +113,7 @@ export class DeployService {
 
   /**
    * Update or add agent in manifest
-   * Replaces $AGENT_DIR placeholder with actual path in commands
+   * Regenerates commands to ensure they always have the latest format (including 2>/dev/null)
    */
   private _upsertAgentInManifest(
     manifest: ManifestFile,
@@ -123,13 +124,13 @@ export class DeployService {
       (a) => a.name === agent.name
     );
 
-    // Replace $AGENT_DIR placeholder with actual path
-    // Also ensure we are using gemini format if not already
-    // (Assuming agent.commands come pre-formatted or we blindly trust them for now)
-    const resolvedCommands = {
-      start: agent.commands.start.replace(/\$AGENT_DIR/g, agentDir),
-      resume: agent.commands.resume.replace(/\$AGENT_DIR/g, agentDir),
-    };
+    // Always regenerate commands to ensure latest format
+    // This guarantees 2>/dev/null is included for clean orchestrator output
+    const resolvedCommands = generateCommands(
+      agent.name,
+      agent.vendor,
+      agentDir
+    );
 
     const agentEntry = {
       name: agent.name,
