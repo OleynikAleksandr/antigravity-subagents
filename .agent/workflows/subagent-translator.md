@@ -7,10 +7,10 @@ Execute this SubAgent with the given task.
 
 Start command:
 ```bash
-cd "/Users/oleksandroliinyk/VSCODE/antigravity-subagents/.subagents/translator" && codex exec --skip-git-repo-check --sandbox danger-full-access "First, read translator.md. Then: $TASK"
+cd "/Users/oleksandroliinyk/VSCODE/antigravity-subagents/.subagents/translator" && codex exec --skip-git-repo-check --dangerously-bypass-approvals-and-sandbox "First, read translator.md. Then: $TASK"
 ```
 
 Resume command (if questions are asked):
 ```bash
-cd "/Users/oleksandroliinyk/VSCODE/antigravity-subagents/.subagents/translator" && codex exec --sandbox danger-full-access resume $SESSION_ID "$ANSWER"
+cd "/Users/oleksandroliinyk/VSCODE/antigravity-subagents/.subagents/translator" && codex exec --dangerously-bypass-approvals-and-sandbox resume $SESSION_ID "$ANSWER"
 ```

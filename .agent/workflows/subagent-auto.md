@@ -1,7 +1,6 @@
 ---
 description: Auto-select and run the best SubAgent for the task
 ---
-
 # SubAgent Auto-Routing
 
 Read `.subagents/manifest.json` (or `~/.subagents/manifest.json` for global agents).
