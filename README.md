@@ -2,7 +2,7 @@
 
 **VS Code Extension to empower Antigravity IDE's Orchestrator Agents to manage Sub-Agents (Codex CLI, Claude Code CLI).**
 
-![Version](https://img.shields.io/badge/version-0.0.10-blue)
+![Version](https://img.shields.io/badge/version-0.0.11-blue)
 ![VS Code](https://img.shields.io/badge/VS%20Code-1.85+-purple)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -20,7 +20,7 @@
   - **Global**: `~/.gemini/antigravity/global_workflows/`
   - **Project**: `<project>/.agent/workflows/`
 - **Visual Editor** — Rich VS Code UI to create and manage agents.
-- **Sandbox Control** — Sub-Agents run with `danger-full-access` permissions, allowing them to effectively read/write project files when commanded by the Orchestrator.
+- **Full Autonomy** — Codex Sub-Agents run with `--dangerously-bypass-approvals-and-sandbox`, giving them complete freedom to execute any operations without permission prompts.
 
 ![Create SubAgent UI](docs/images/create-subagent-ui.png)
 

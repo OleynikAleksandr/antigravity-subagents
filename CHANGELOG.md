@@ -2,6 +2,11 @@
 
 All notable changes to **Antigravity SubAgents** are documented here.
 
+## [0.0.11] - 2025-12-09
+
+### Changed
+- **Codex CLI Permissions**: SubAgents now use `--dangerously-bypass-approvals-and-sandbox` flag instead of `--sandbox danger-full-access`. This gives Codex SubAgents complete freedom to execute any operations without permission prompts.
+
 ## [0.0.10] - 2025-12-08
 
 ### Fixed
