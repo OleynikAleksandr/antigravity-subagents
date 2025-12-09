@@ -110,56 +110,48 @@ export class DeployedService {
   ): Promise<void> {
     const commandFileName = `subagent-${name}.md`;
 
-    // Codex: always in ~/.codex/prompts/
-    const codexCommand = join(homeDir, ".codex", "prompts", commandFileName);
-    await rm(codexCommand, { force: true });
-
-    // Claude: depends on source
+    // Project workflows: .agent/workflows/
     if (source === "project") {
-      // Project: .claude/commands/
-      const claudeCommand = join(
+      const workflowCommand = join(
         baseDir,
-        ".claude",
-        "commands",
+        ".agent",
+        "workflows",
         commandFileName
       );
-      await rm(claudeCommand, { force: true });
-    } else {
-      // Global: ~/.claude/commands/
-      const claudeCommand = join(
-        homeDir,
-        ".claude",
-        "commands",
-        commandFileName
-      );
-      await rm(claudeCommand, { force: true });
+      await rm(workflowCommand, { force: true });
     }
+
+    // Global workflows: ~/.gemini/antigravity/global_workflows/
+    const globalWorkflowCommand = join(
+      homeDir,
+      ".gemini",
+      "antigravity",
+      "global_workflows",
+      commandFileName
+    );
+    await rm(globalWorkflowCommand, { force: true });
   }
 
   /**
    * Cleanup when last agent is undeployed
-   * Removes all extension-created files: manifest, scripts, log, slash commands
+   * Removes entire .subagents folder and subagent-auto.md workflows
    */
   private async _cleanupLastAgent(
     source: "project" | "global",
     homeDir: string,
     baseDir: string
   ): Promise<void> {
+    // Remove entire .subagents folder
     const subagentsDir = join(baseDir, ".subagents");
+    await rm(subagentsDir, { recursive: true, force: true });
 
-    // Remove start.sh, resume.sh, subagent.log, manifest.json
-    await rm(join(subagentsDir, "start.sh"), { force: true });
-    await rm(join(subagentsDir, "resume.sh"), { force: true });
-    await rm(join(subagentsDir, "subagent.log"), { force: true });
-    await rm(join(subagentsDir, "manifest.json"), { force: true });
-
-    // Remove project workflows if project deploy
+    // Remove subagent-auto.md from project workflows (don't touch the folder)
     if (source === "project") {
       const workflowsDir = join(baseDir, ".agent", "workflows");
       await rm(join(workflowsDir, "subagent-auto.md"), { force: true });
     }
 
-    // Remove global workflows
+    // Remove subagent-auto.md from global workflows
     const globalWorkflowsDir = join(
       homeDir,
       ".gemini",
