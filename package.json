@@ -2,7 +2,7 @@
   "name": "antigravity-subagents",
   "displayName": "SubAgent Manager",
   "description": "Manage Codex/Claude Sub-Agents via Antigravity IDE",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "publisher": "OleksandrOliinyk",
   "repository": {
     "type": "git",
