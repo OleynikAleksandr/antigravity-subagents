@@ -2,6 +2,27 @@
 
 All notable changes to **Antigravity SubAgents** are documented here.
 
+## [0.0.14] - 2025-12-09
+
+### Fixed
+- **Clean Orchestrator Output** — Added `2>/dev/null` to all SubAgent commands (both Codex and Claude vendors)
+  
+  **Problem:** When the Antigravity Orchestrator invoked a SubAgent, it received the entire output stream including:
+  - Internal `thinking` blocks (agent reasoning)
+  - `exec` command logs with full shell output
+  - Intermediate messages and debugging information
+  
+  This polluted the orchestrator's context window and made it difficult to parse the actual SubAgent response.
+  
+  **Solution:** All SubAgent commands now redirect stderr to `/dev/null`, ensuring the orchestrator receives **only the final answer** (stdout), not internal processing logs.
+
+- **Command Regeneration on Deploy** — Commands are now regenerated during every deploy operation
+  
+  Previously, commands stored in the Library were used as-is during deploy. If an agent was created before this fix, its commands would still lack `2>/dev/null`. Now, commands are always regenerated from the centralized `command-generator.ts`, guaranteeing the latest format.
+
+### Added
+- `src/core/command-generator.ts` — Centralized command generator for consistent command format across all deploy operations
+
 ## [0.0.11] - 2025-12-09
 
 ### Changed
