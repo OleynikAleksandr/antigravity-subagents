@@ -17,8 +17,11 @@ LOG_FILE="$SUBAGENTS_DIR/subagent.log"
 # Create/clear log file for new session
 echo "=== [$AGENT] START $(date +%H:%M:%S) ===" > "$LOG_FILE"
 
-# Open Terminal.app with tail -f (runs in background, won't block)
-osascript -e "tell app \\"Terminal\\" to do script \\"tail -n 200 -f '$LOG_FILE'\\"" &>/dev/null &
+# Open Terminal.app with tail -f and bring to front
+osascript -e "tell app \\"Terminal\\"
+  do script \\"tail -n 200 -f '$LOG_FILE'\\"
+  activate
+end tell" &>/dev/null &
 
 cd "$AGENT_DIR"
 
