@@ -7,7 +7,7 @@ import { join } from "node:path";
  * extracts session_id and outputs clean result to orchestrator
  *
  * Codex: stderr -> log, stdout -> result, session_id from stderr
- * Claude: --output-format json -> log, extract result+session_id via jq
+ * Claude: simple text output only (no verbose logging support in print mode)
  */
 const START_SCRIPT = `#!/bin/bash
 VENDOR="$1"
@@ -42,25 +42,12 @@ if [ "$VENDOR" = "codex" ]; then
   SESSION_ID=$(sed 's/\\x1b\\[[0-9;]*m//g' "$TEMP_OUTPUT" | grep -oE "session id: [0-9a-f-]+" | head -1 | cut -d' ' -f3)
   
 else
-  # CLAUDE: use JSON output format to get session_id and full logs
-  claude -p "First, read \${AGENT}.md. Then: $TASK" \\
-    --dangerously-skip-permissions --output-format json > "$TEMP_OUTPUT" 2>&1
+  # CLAUDE: simple text output (Claude doesn't support verbose stderr like Codex)
+  # No log writing - Claude prints only final result to stdout
+  claude -p "First, read \${AGENT}.md. Then: $TASK" --dangerously-skip-permissions
   
-  # Write full JSON to log (pretty-printed if possible)
-  if command -v jq &>/dev/null; then
-    jq '.' "$TEMP_OUTPUT" >> "$LOG_FILE" 2>/dev/null || cat "$TEMP_OUTPUT" >> "$LOG_FILE"
-  else
-    cat "$TEMP_OUTPUT" >> "$LOG_FILE"
-  fi
-  
-  # Extract session_id from JSON (last result block)
-  SESSION_ID=$(jq -r 'if type == "array" then .[] else . end | select(.type == "result") | .session_id' "$TEMP_OUTPUT" 2>/dev/null | tail -1)
-  
-  # Extract result text and output to stdout
-  RESULT=$(jq -r 'if type == "array" then .[] else . end | select(.type == "result") | .result' "$TEMP_OUTPUT" 2>/dev/null | tail -1)
-  if [ -n "$RESULT" ] && [ "$RESULT" != "null" ]; then
-    echo "$RESULT"
-  fi
+  # Claude doesn't output session_id in text mode
+  SESSION_ID=""
 fi
 
 rm -f "$TEMP_OUTPUT"
@@ -77,7 +64,7 @@ fi
  * Appends to log file (same session continues)
  *
  * Codex: uses resume command with session_id
- * Claude: uses --resume with session_id and JSON output
+ * Claude: uses --continue (no session_id support in simple mode)
  */
 const RESUME_SCRIPT = `#!/bin/bash
 VENDOR="$1"
@@ -107,25 +94,12 @@ if [ "$VENDOR" = "codex" ]; then
   NEW_SESSION_ID=$(sed 's/\\x1b\\[[0-9;]*m//g' "$TEMP_OUTPUT" | grep -oE "session id: [0-9a-f-]+" | head -1 | cut -d' ' -f3)
   
 else
-  # CLAUDE: use --resume with session_id and JSON format
-  claude -p "$ANSWER" --resume "$SESSION_ID" \\
-    --dangerously-skip-permissions --output-format json > "$TEMP_OUTPUT" 2>&1
+  # CLAUDE: simple text output with --continue
+  # Note: Claude uses --continue instead of session_id for resuming
+  claude -p "$ANSWER" --dangerously-skip-permissions --continue
   
-  # Write full JSON to log
-  if command -v jq &>/dev/null; then
-    jq '.' "$TEMP_OUTPUT" >> "$LOG_FILE" 2>/dev/null || cat "$TEMP_OUTPUT" >> "$LOG_FILE"
-  else
-    cat "$TEMP_OUTPUT" >> "$LOG_FILE"
-  fi
-  
-  # Extract session_id from JSON
-  NEW_SESSION_ID=$(jq -r 'if type == "array" then .[] else . end | select(.type == "result") | .session_id' "$TEMP_OUTPUT" 2>/dev/null | tail -1)
-  
-  # Extract result text and output to stdout
-  RESULT=$(jq -r 'if type == "array" then .[] else . end | select(.type == "result") | .result' "$TEMP_OUTPUT" 2>/dev/null | tail -1)
-  if [ -n "$RESULT" ] && [ "$RESULT" != "null" ]; then
-    echo "$RESULT"
-  fi
+  # Claude doesn't output session_id in text mode
+  NEW_SESSION_ID=""
 fi
 
 rm -f "$TEMP_OUTPUT"
