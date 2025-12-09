@@ -11,7 +11,7 @@ VENDOR="$1"
 AGENT="$2"
 TASK="$3"
 
-SUBAGENTS_DIR="$(dirname "$0")"
+SUBAGENTS_DIR="$(cd "$(dirname "$0")" && pwd)"
 AGENT_DIR="$SUBAGENTS_DIR/$AGENT"
 LOG_FILE="$SUBAGENTS_DIR/subagent.log"
 TEMP_STDERR=$(mktemp)
@@ -36,8 +36,8 @@ else
     --dangerously-skip-permissions 2>"$TEMP_STDERR"
 fi
 
-# Extract session_id from stderr (Codex format: "session id: UUID")
-SESSION_ID=$(grep -oE "session id: [0-9a-f-]+" "$TEMP_STDERR" | head -1 | cut -d' ' -f3)
+# Extract session_id from stderr (strip ANSI codes first, Codex uses color formatting)
+SESSION_ID=$(sed 's/\\x1b\\[[0-9;]*m//g' "$TEMP_STDERR" | grep -oE "session id: [0-9a-f-]+" | head -1 | cut -d' ' -f3)
 
 # Append stderr to log file
 cat "$TEMP_STDERR" >> "$LOG_FILE"
@@ -60,7 +60,7 @@ AGENT="$2"
 SESSION_ID="$3"
 ANSWER="$4"
 
-SUBAGENTS_DIR="$(dirname "$0")"
+SUBAGENTS_DIR="$(cd "$(dirname "$0")" && pwd)"
 AGENT_DIR="$SUBAGENTS_DIR/$AGENT"
 LOG_FILE="$SUBAGENTS_DIR/subagent.log"
 
