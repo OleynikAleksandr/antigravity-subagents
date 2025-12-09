@@ -30,8 +30,8 @@ export function openLogTerminal(subagentsDir?: string): vscode.Terminal {
     message: "📋 SubAgent Log - Watching for activity...",
   });
 
-  // Start tail -f
-  terminal.sendText(`tail -f "${logFile}"`);
+  // Start tail with history (last 200 lines) + follow
+  terminal.sendText(`tail -n 200 -f "${logFile}"`);
   terminal.show();
 
   return terminal;
