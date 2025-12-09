@@ -2,6 +2,19 @@
 
 All notable changes to **Antigravity SubAgents** are documented here.
 
+## [0.0.23] - 2025-12-09
+
+### Added
+- **Real-time Logging (Codex)** — When a Codex SubAgent runs, a Terminal window automatically opens showing full verbose output (thinking, tool calls, exec logs). The Orchestrator receives only the final answer to save tokens.
+- **Session ID Extraction (Codex)** — Session ID is now extracted from stderr and appended to stdout as `[SESSION_ID: uuid]` for potential resume functionality.
+
+### Changed
+- **Claude Simplified Mode** — Claude SubAgents now run in simple text output mode without logging (Claude CLI doesn't support verbose stderr in print mode). Resume uses `--continue` flag.
+- **Conditional Terminal** — Terminal window with log viewer opens only for Codex, not for Claude.
+
+### Documentation
+- Added `doc/Knowledge/Claude_CLI_Logging_Research.md` — detailed research on Claude CLI logging limitations.
+
 ## [0.0.14] - 2025-12-09
 
 ### Fixed
