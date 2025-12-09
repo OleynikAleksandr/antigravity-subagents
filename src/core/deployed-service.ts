@@ -138,38 +138,35 @@ export class DeployedService {
 
   /**
    * Cleanup when last agent is undeployed
+   * Removes all extension-created files: manifest, scripts, log, slash commands
    */
   private async _cleanupLastAgent(
     source: "project" | "global",
     homeDir: string,
     baseDir: string
   ): Promise<void> {
-    // Remove subagent-auto command
-    const codexAutoCommand = join(
-      homeDir,
-      ".codex",
-      "prompts",
-      "subagent-auto.md"
-    );
-    await rm(codexAutoCommand, { force: true });
+    const subagentsDir = join(baseDir, ".subagents");
 
+    // Remove start.sh, resume.sh, subagent.log, manifest.json
+    await rm(join(subagentsDir, "start.sh"), { force: true });
+    await rm(join(subagentsDir, "resume.sh"), { force: true });
+    await rm(join(subagentsDir, "subagent.log"), { force: true });
+    await rm(join(subagentsDir, "manifest.json"), { force: true });
+
+    // Remove project workflows if project deploy
     if (source === "project") {
-      const claudeAutoCommand = join(
-        baseDir,
-        ".claude",
-        "commands",
-        "subagent-auto.md"
-      );
-      await rm(claudeAutoCommand, { force: true });
-    } else {
-      const claudeAutoCommand = join(
-        homeDir,
-        ".claude",
-        "commands",
-        "subagent-auto.md"
-      );
-      await rm(claudeAutoCommand, { force: true });
+      const workflowsDir = join(baseDir, ".agent", "workflows");
+      await rm(join(workflowsDir, "subagent-auto.md"), { force: true });
     }
+
+    // Remove global workflows
+    const globalWorkflowsDir = join(
+      homeDir,
+      ".gemini",
+      "antigravity",
+      "global_workflows"
+    );
+    await rm(join(globalWorkflowsDir, "subagent-auto.md"), { force: true });
 
     // Remove auto-routing section from global configs
     const autoRouting = new AutoRoutingService();
