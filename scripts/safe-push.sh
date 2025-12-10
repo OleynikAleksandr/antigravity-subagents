@@ -6,15 +6,15 @@ set -e
 
 echo "🔄 Safe Push - excluding .agent/ from GitHub"
 
-# 1. Check if there are changes to push
-if [[ -z $(git status --porcelain) ]] && [[ $(git rev-list @{u}..HEAD 2>/dev/null | wc -l) -eq 0 ]]; then
-    echo "✅ Nothing to push"
-    exit 0
-fi
-
-# 2. Check current branch
+# 1. Check current branch
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 echo "📌 Branch: $BRANCH"
+
+# 2. Remove .agent/ from git tracking (keeps files locally)
+if git ls-files --error-unmatch .agent/ >/dev/null 2>&1; then
+    git rm -r --cached .agent/
+    echo "📂 Removed .agent/ from git tracking"
+fi
 
 # 3. Add .agent/ to .gitignore temporarily
 if ! grep -q "^\.agent/$" .gitignore 2>/dev/null; then
@@ -22,9 +22,8 @@ if ! grep -q "^\.agent/$" .gitignore 2>/dev/null; then
     echo "📝 Added .agent/ to .gitignore"
 fi
 
-# 4. Stage all changes (except .agent/)
+# 4. Stage all changes
 git add -A
-git add .gitignore
 
 # 5. Commit if there are staged changes
 if ! git diff --cached --quiet; then
