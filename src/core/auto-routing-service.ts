@@ -1,19 +1,17 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { homedir } from "node:os";
-import { dirname, join } from "node:path";
+import { mkdir, rm, writeFile } from "node:fs/promises";
+import { join } from "node:path";
+// biome-ignore lint/performance/noNamespaceImport: VS Code API requires namespace import
+import * as vscode from "vscode";
 
 /**
- * Marker to detect if auto-routing section already exists
+ * Filename for the routing protocol rule
  */
-const ROUTING_MARKER_START = "<!-- SUBAGENT-ROUTING -->";
-const ROUTING_MARKER_END = "<!-- /SUBAGENT-ROUTING -->";
+const ROUTING_RULE_FILENAME = "SUBAGENT_DELEGATION_PROTOCOL.md";
 
 /**
- * Auto-routing section for Antigravity (GEMINI.md)
+ * Content for the SUBAGENT_DELEGATION_PROTOCOL.md rule file
  */
-const GEMINI_ROUTING_SECTION = `
-${ROUTING_MARKER_START}
-# 🚦 CRITICAL: SUBAGENT DELEGATION PROTOCOL
+const ROUTING_RULE_CONTENT = `# 🚦 CRITICAL: SUBAGENT DELEGATION PROTOCOL
 
 **PRIORITY 0 (HIGHEST):** Before analyzing the user request depth or planning, you MUST perform a "Capability Scan":
 
@@ -51,111 +49,59 @@ command_status(CommandId="<id>", WaitDurationSeconds=60)
 - **Read the final output**: SubAgent's response is at the end of stdout
 
 **Philosophy**: "Never manually do what a SubAgent is configured to do."
-${ROUTING_MARKER_END}
 `;
 
 /**
- * Service for managing auto-routing instructions in CLI config files
+ * Service for managing auto-routing instructions via .agent/rules/
+ * Instead of modifying global GEMINI.md, we create a dedicated rule file
  */
 export class AutoRoutingService {
   /**
-   * Ensure auto-routing section exists in global CLI config files
+   * Get workspace root path
+   */
+  private _getWorkspaceRoot(): string | null {
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    return workspaceFolders?.[0]?.uri.fsPath ?? null;
+  }
+
+  /**
+   * Ensure auto-routing rule file exists in .agent/rules/
    * Called on first deploy
    */
   async ensureAutoRoutingInstructions(): Promise<void> {
-    const homeDir = homedir();
+    const workspaceRoot = this._getWorkspaceRoot();
+    if (!workspaceRoot) {
+      return; // No workspace open
+    }
 
-    // Target only ~/.gemini/GEMINI.md
-    await this._ensureRoutingInFile(
-      join(homeDir, ".gemini", "GEMINI.md"),
-      GEMINI_ROUTING_SECTION
-    );
+    const rulesDir = join(workspaceRoot, ".agent", "rules");
+    const ruleFile = join(rulesDir, ROUTING_RULE_FILENAME);
+
+    // Create .agent/rules/ directory if it doesn't exist
+    await mkdir(rulesDir, { recursive: true });
+
+    // Write the rule file (overwrite to ensure latest content)
+    await writeFile(ruleFile, ROUTING_RULE_CONTENT, "utf-8");
   }
 
   /**
-   * Check if routing section exists and add if missing
-   */
-  private async _ensureRoutingInFile(
-    filePath: string,
-    routingSection: string
-  ): Promise<void> {
-    let content = "";
-
-    try {
-      content = await readFile(filePath, "utf-8");
-    } catch (_ignored) {
-      // File doesn't exist, will create with routing section
-      // But first ensure directory exists
-      try {
-        await mkdir(dirname(filePath), { recursive: true });
-      } catch (err) {
-        console.error(`Failed to create directory for ${filePath}`, err);
-      }
-    }
-
-    // Check if already has routing section
-    if (content.includes(ROUTING_MARKER_START)) {
-      return; // Already has routing, skip
-    }
-
-    // Append routing section
-    // Ensure there is a newline before appending if file is not empty
-    const prefix = content && !content.endsWith("\n") ? "\n" : "";
-    const newContent = content + prefix + routingSection;
-    await writeFile(filePath, newContent, "utf-8");
-  }
-
-  /**
-   * Remove auto-routing section from global CLI config files
+   * Remove auto-routing rule file
    * Called when last SubAgent is undeployed
    */
   async removeAutoRoutingInstructions(): Promise<void> {
-    const homeDir = homedir();
-
-    // Remove from ~/.gemini/GEMINI.md
-    await this._removeRoutingFromFile(join(homeDir, ".gemini", "GEMINI.md"));
-  }
-
-  /**
-   * Remove routing section from file
-   */
-  private async _removeRoutingFromFile(filePath: string): Promise<void> {
-    let content = "";
-
-    try {
-      content = await readFile(filePath, "utf-8");
-    } catch (_ignored) {
-      return; // File doesn't exist, nothing to remove
+    const workspaceRoot = this._getWorkspaceRoot();
+    if (!workspaceRoot) {
+      return; // No workspace open
     }
 
-    // Check if has routing section
-    if (!content.includes(ROUTING_MARKER_START)) {
-      return; // No routing section, nothing to remove
-    }
+    const ruleFile = join(
+      workspaceRoot,
+      ".agent",
+      "rules",
+      ROUTING_RULE_FILENAME
+    );
 
-    // Remove the routing section (including markers)
-    const startIdx = content.indexOf(ROUTING_MARKER_START);
-    const endIdx = content.indexOf(ROUTING_MARKER_END);
-
-    if (startIdx === -1 || endIdx === -1) {
-      return; // Malformed markers
-    }
-
-    // Remove from start marker to end marker (inclusive) plus trailing newline
-    // We want to remove the exact block we added
-    const beforeSection = content.substring(0, startIdx);
-    const afterSection = content.substring(endIdx + ROUTING_MARKER_END.length);
-
-    // Clean up extra newlines if they resulted from removal
-    let newContent = beforeSection + afterSection;
-
-    // If we left a trailing newline that wasn't there originally (or just cleanup)
-    // For safety, just trim end and ensure one newline if content remains
-    newContent = newContent.trim();
-    if (newContent.length > 0) {
-      newContent += "\n";
-    }
-
-    await writeFile(filePath, newContent, "utf-8");
+    // Remove the rule file
+    await rm(ruleFile, { force: true });
   }
 }
