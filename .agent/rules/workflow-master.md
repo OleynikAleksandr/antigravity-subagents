@@ -155,5 +155,5 @@ doc/TODO/Archive/
    - Если версия была обновлена, закоммить `package.json`: `git commit -am "chore: release v<version>"`.
    - Обнови `doc/TODO/todo-plan.md` и `doc/Sessions/SessionXXX.md`.
 6. **Публикация**:
-   - `git push origin main`.
+   - **ВАЖНО**: Используй `./scripts/safe-push.sh` вместо `git push` — это защитит `.agent/` от попадания на GitHub.
    - Передай `.vsix` пользователю или создай GitHub Release.

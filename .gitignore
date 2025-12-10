@@ -28,7 +28,6 @@ doc/
 .subagents/
 .vscode/
 .gemini/
-scripts/
 AGENTS.md
 biome.jsonc
 lefthook.yml
@@ -38,4 +37,3 @@ lefthook.yml
 README_ru.md
 CHANGELOG_ru.md
 ru-CHANGELOG.md.agent/
-.agent/
