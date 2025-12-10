@@ -2,6 +2,17 @@
 
 All notable changes to **Antigravity SubAgents** are documented here.
 
+## [0.0.25] - 2025-12-10
+
+### Changed
+- **Local Rules Instead of Global** — Auto-routing instructions now create `.agent/rules/subagent-delegation-protocol.md` instead of modifying `~/.gemini/GEMINI.md`.
+  - File is committed to git (required for Gemini IDE recognition)
+  - Includes `trigger: always_on` frontmatter
+  - Removed when last SubAgent is undeployed
+
+### Fixed
+- **Gemini IDE Recognition** — Rule files now use lowercase with hyphens and proper frontmatter.
+
 ## [0.0.23] - 2025-12-09
 
 ### Added
