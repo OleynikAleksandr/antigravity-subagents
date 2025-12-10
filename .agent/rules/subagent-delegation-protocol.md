@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 # 🚦 CRITICAL: SUBAGENT DELEGATION PROTOCOL
 
 **PRIORITY 0 (HIGHEST):** Before analyzing the user request depth or planning, you MUST perform a "Capability Scan":
@@ -19,9 +23,9 @@
             *   **IF you DON'T know**: Ask the User in chat, wait for their response, and THEN relay it to the SubAgent using `commands.resume`.
     *   **IF NO MATCH**: Proceed with your own standard tools.
 
-## 🔧 TECHNICAL: How to Execute SubAgent Commands
+## �� TECHNICAL: How to Execute SubAgent Commands
 
-```
+\`\`\`
 # Step 1: Start (goes to background immediately)
 run_command(CommandLine="<command from manifest>", WaitMsBeforeAsync=500)
 # Returns: Background command ID: <id>
@@ -29,7 +33,7 @@ run_command(CommandLine="<command from manifest>", WaitMsBeforeAsync=500)
 # Step 2: Wait for completion
 command_status(CommandId="<id>", WaitDurationSeconds=60)
 # Keep checking until Status: DONE
-```
+\`\`\`
 
 - **Run as background task**: Use `WaitMsBeforeAsync: 500` (small value to send to background)
 - **Wait for completion**: Use `command_status` with `WaitDurationSeconds: 60` (or more for complex tasks)

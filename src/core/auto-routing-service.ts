@@ -10,9 +10,14 @@ import * as vscode from "vscode";
 const ROUTING_RULE_FILENAME = "subagent-delegation-protocol.md";
 
 /**
- * Content for the SUBAGENT_DELEGATION_PROTOCOL.md rule file
+ * Content for the subagent-delegation-protocol.md rule file
+ * Includes frontmatter required by Gemini IDE
  */
-const ROUTING_RULE_CONTENT = `# 🚦 CRITICAL: SUBAGENT DELEGATION PROTOCOL
+const ROUTING_RULE_CONTENT = `---
+trigger: always_on
+---
+
+# 🚦 CRITICAL: SUBAGENT DELEGATION PROTOCOL
 
 **PRIORITY 0 (HIGHEST):** Before analyzing the user request depth or planning, you MUST perform a "Capability Scan":
 
