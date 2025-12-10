@@ -5,8 +5,9 @@ import * as vscode from "vscode";
 
 /**
  * Filename for the routing protocol rule
+ * Must be lowercase with hyphens to be recognized by Gemini IDE
  */
-const ROUTING_RULE_FILENAME = "SUBAGENT_DELEGATION_PROTOCOL.md";
+const ROUTING_RULE_FILENAME = "subagent-delegation-protocol.md";
 
 /**
  * Content for the SUBAGENT_DELEGATION_PROTOCOL.md rule file
