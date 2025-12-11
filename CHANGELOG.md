@@ -2,7 +2,10 @@
 
 All notable changes to **Antigravity SubAgents** are documented here.
 
-## [0.0.27] - 2025-12-11
+## [0.0.28] - 2025-12-11
+
+### Fixed
+- **Real-time Logging (Codex)** — stderr now streams to log file in real-time using `tee` instead of being dumped at the end of execution
 
 ### Added
 - **SubAgent Isolation** — SubAgents are now completely isolated from user's global configuration files:
@@ -13,7 +16,7 @@ All notable changes to **Antigravity SubAgents** are documented here.
   - Works out of the box — no user configuration required
   - Ensures SubAgents execute only their specific instructions without inheriting Orchestrator's or user's settings
 
-## [0.0.26] - 2025-12-11 (SUPERSEDED)
+## [0.0.27] - 2025-12-11 (SUPERSEDED)
 
 ### Note
 This version had incomplete isolation implementation. Use v0.0.27 instead.

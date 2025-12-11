@@ -7,10 +7,10 @@ Execute this SubAgent with the given task.
 
 Start command:
 ```bash
-"$SUBAGENTS_DIR/start.sh" claude translator "$TASK"
+"$SUBAGENTS_DIR/start.sh" codex translator "$TASK"
 ```
 
 Resume command (if questions are asked):
 ```bash
-"$SUBAGENTS_DIR/resume.sh" claude translator $SESSION_ID "$ANSWER"
+"$SUBAGENTS_DIR/resume.sh" codex translator $SESSION_ID "$ANSWER"
 ```

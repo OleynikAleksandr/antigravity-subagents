@@ -42,11 +42,9 @@ if [ "$VENDOR" = "codex" ]; then
     activate
   end tell" &>/dev/null &
   
+  # Run Codex with stderr streaming to both log file (real-time) and temp file (for session_id extraction)
   CODEX_HOME="$AGENT_DIR/.codex" codex exec --skip-git-repo-check --dangerously-bypass-approvals-and-sandbox \\
-    "First, read \${AGENT}.md. Then: $TASK" 2>"$TEMP_OUTPUT"
-  
-  # Append stderr to log
-  cat "$TEMP_OUTPUT" >> "$LOG_FILE"
+    "First, read \${AGENT}.md. Then: $TASK" 2> >(tee "$TEMP_OUTPUT" >> "$LOG_FILE")
   
   # Extract session_id (strip ANSI codes first)
   SESSION_ID=$(sed 's/\\x1b\\[[0-9;]*m//g' "$TEMP_OUTPUT" | grep -oE "session id: [0-9a-f-]+" | head -1 | cut -d' ' -f3)
