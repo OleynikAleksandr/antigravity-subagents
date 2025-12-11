@@ -2,14 +2,21 @@
 
 All notable changes to **Antigravity SubAgents** are documented here.
 
-## [0.0.26] - 2025-12-11
+## [0.0.27] - 2025-12-11
 
 ### Added
 - **SubAgent Isolation** — SubAgents are now completely isolated from user's global configuration files:
-  - **Codex**: Uses `CODEX_HOME` to prevent reading `~/.codex/AGENTS.md`
-  - **Claude**: Uses `CLAUDE_CONFIG_DIR` to prevent reading `~/.claude/CLAUDE.md`
+  - **Codex**: Uses `CODEX_HOME` pointing to `.codex` subdirectory with symlinked `auth.json`
+    - Blocks `~/.codex/AGENTS.md` while preserving authentication
+  - **Claude**: Uses `--setting-sources ""` flag
+    - Blocks all `CLAUDE.md` files, credentials from macOS Keychain remain accessible
   - Works out of the box — no user configuration required
   - Ensures SubAgents execute only their specific instructions without inheriting Orchestrator's or user's settings
+
+## [0.0.26] - 2025-12-11 (SUPERSEDED)
+
+### Note
+This version had incomplete isolation implementation. Use v0.0.27 instead.
 
 ## [0.0.25] - 2025-12-10
 

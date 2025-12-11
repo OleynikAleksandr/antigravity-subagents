@@ -10,7 +10,7 @@ import {
   generateIndividualCommand,
   SUBAGENT_AUTO_TEMPLATE,
 } from "./command-templates";
-import { ensureScripts } from "./script-generator";
+import { ensureScripts, setupCodexIsolation } from "./script-generator";
 
 /**
  * Manifest file structure for .subagents/manifest.json
@@ -53,18 +53,23 @@ export class DeployService {
     await mkdir(agentDir, { recursive: true });
     await ensureScripts(subagentsDir);
 
-    // 2. Write instructions file
+    // 2. Setup Codex isolation (symlink to auth.json for credentials)
+    if (agent.vendor === "codex") {
+      await setupCodexIsolation(agentDir);
+    }
+
+    // 3. Write instructions file
     await writeFile(agentFile, agent.instructions, "utf-8");
 
-    // 3. Update manifest.json
+    // 4. Update manifest.json
     const manifest = await this._loadOrCreateManifest(manifestFile);
     this._upsertAgentInManifest(manifest, agent, subagentsDir);
     await writeFile(manifestFile, JSON.stringify(manifest, null, 2), "utf-8");
 
-    // 4. Create slash commands in .agent/workflows/
+    // 5. Create slash commands in .agent/workflows/
     await this._createProjectWorkflows(rootPath, agent, agentDir);
 
-    // 5. Ensure auto-routing instructions in ~/.gemini/GEMINI.md
+    // 6. Ensure auto-routing instructions in ~/.gemini/GEMINI.md
     await this.autoRoutingService.ensureAutoRoutingInstructions();
   }
 
@@ -85,18 +90,23 @@ export class DeployService {
     await mkdir(agentDir, { recursive: true });
     await ensureScripts(subagentsDir);
 
-    // 2. Write instructions file
+    // 2. Setup Codex isolation (symlink to auth.json for credentials)
+    if (agent.vendor === "codex") {
+      await setupCodexIsolation(agentDir);
+    }
+
+    // 3. Write instructions file
     await writeFile(agentFile, agent.instructions, "utf-8");
 
-    // 3. Update manifest.json
+    // 4. Update manifest.json
     const manifest = await this._loadOrCreateManifest(manifestFile);
     this._upsertAgentInManifest(manifest, agent, subagentsDir);
     await writeFile(manifestFile, JSON.stringify(manifest, null, 2), "utf-8");
 
-    // 4. Create global slash commands
+    // 5. Create global slash commands
     await this._createGlobalWorkflows(homeDir, agent, agentDir);
 
-    // 5. Ensure auto-routing instructions in ~/.gemini/GEMINI.md
+    // 6. Ensure auto-routing instructions in ~/.gemini/GEMINI.md
     await this.autoRoutingService.ensureAutoRoutingInstructions();
   }
 
