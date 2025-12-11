@@ -23,6 +23,7 @@ cd "$AGENT_DIR"
 
 if [ "$VENDOR" = "codex" ]; then
   # CODEX: stderr contains session_id and verbose logs
+  # ISOLATION: CODEX_HOME isolates SubAgent from user's ~/.codex/AGENTS.md
   
   # Create/clear log file for new session
   echo "=== [$AGENT] START $(date +%H:%M:%S) ===" > "$LOG_FILE"
@@ -33,7 +34,7 @@ if [ "$VENDOR" = "codex" ]; then
     activate
   end tell" &>/dev/null &
   
-  codex exec --skip-git-repo-check --dangerously-bypass-approvals-and-sandbox \\
+  CODEX_HOME="$AGENT_DIR" codex exec --skip-git-repo-check --dangerously-bypass-approvals-and-sandbox \\
     "First, read \${AGENT}.md. Then: $TASK" 2>"$TEMP_OUTPUT"
   
   # Append stderr to log
@@ -44,8 +45,9 @@ if [ "$VENDOR" = "codex" ]; then
   
 else
   # CLAUDE: simple text output (Claude doesn't support verbose stderr like Codex)
+  # ISOLATION: CLAUDE_CONFIG_DIR isolates SubAgent from user's ~/.claude/CLAUDE.md
   # No log writing - Claude prints only final result to stdout
-  claude -p "First, read \${AGENT}.md. Then: $TASK" --dangerously-skip-permissions
+  CLAUDE_CONFIG_DIR="$AGENT_DIR" claude -p "First, read \${AGENT}.md. Then: $TASK" --dangerously-skip-permissions
   
   # Claude doesn't output session_id in text mode
   SESSION_ID=""
@@ -82,11 +84,12 @@ cd "$AGENT_DIR"
 
 if [ "$VENDOR" = "codex" ]; then
   # CODEX: use resume command with session_id
+  # ISOLATION: CODEX_HOME isolates SubAgent from user's ~/.codex/AGENTS.md
   
   # Append to log (same session)
   echo "=== [$AGENT] RESUME $(date +%H:%M:%S) ===" >> "$LOG_FILE"
   
-  codex exec --dangerously-bypass-approvals-and-sandbox \\
+  CODEX_HOME="$AGENT_DIR" codex exec --dangerously-bypass-approvals-and-sandbox \\
     resume "$SESSION_ID" "$ANSWER" 2>"$TEMP_OUTPUT"
   
   # Append stderr to log
@@ -97,8 +100,9 @@ if [ "$VENDOR" = "codex" ]; then
   
 else
   # CLAUDE: simple text output with --continue
+  # ISOLATION: CLAUDE_CONFIG_DIR isolates SubAgent from user's ~/.claude/CLAUDE.md
   # No log - just direct output
-  claude -p "$ANSWER" --dangerously-skip-permissions --continue
+  CLAUDE_CONFIG_DIR="$AGENT_DIR" claude -p "$ANSWER" --dangerously-skip-permissions --continue
   
   # Claude doesn't output session_id in text mode
   NEW_SESSION_ID=""
