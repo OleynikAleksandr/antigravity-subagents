@@ -2,6 +2,23 @@
 
 All notable changes to **Antigravity SubAgents** are documented here.
 
+## [0.0.34] - 2025-12-11
+
+### Added
+- **Unified Real-time Logging** — Both Codex and Claude SubAgents now open a Terminal with live formatted output
+  - Codex: Verbose stderr with thinking, tool calls, execution logs
+  - Claude: JSONL session log parsed with `format-log.js` (💭 thinking, ⚡ tools, ✅ results)
+  - Orchestrator receives **only the final answer** to save tokens
+- **SubAgent Isolation** — SubAgents are completely isolated from user's global configuration:
+  - Codex: `CODEX_HOME` env var pointing to agent-specific `.codex/` with symlinked `auth.json`
+  - Claude: `--setting-sources ""` flag blocks all `CLAUDE.md` files
+- **Multi-turn Conversations** — SubAgents can ask clarifying questions; Orchestrator continues via `resume.sh`
+- **Session ID Extraction** — Both providers now extract and return session_id for conversation continuity
+
+### Fixed
+- **Codex Resume** — Now uses `tee` for real-time stderr streaming
+- **Claude Resume** — Appends to existing log file (no new Terminal window)
+
 ## [0.0.33] - 2025-12-11
 
 ### Fixed

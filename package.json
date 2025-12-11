@@ -1,5 +1,5 @@
 {
-  "name": "antigravity-subagents",
+  "name": "反重力サブエージェント",
   "displayName": "SubAgent Manager",
   "description": "Керування субагентами Codex/Claude через Antigravity IDE",
   "version": "0.0.34",
