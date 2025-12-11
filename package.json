@@ -2,7 +2,7 @@
   "name": "antigravity-subagents",
   "displayName": "SubAgent Manager",
   "description": "Керування субагентами Codex/Claude через Antigravity IDE",
-  "version": "0.0.33",
+  "version": "0.0.34",
   "publisher": "OleksandrOliinyk",
   "repository": {
     "type": "git",
