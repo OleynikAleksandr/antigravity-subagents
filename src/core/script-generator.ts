@@ -143,31 +143,23 @@ if [ "$VENDOR" = "codex" ]; then
   NEW_SESSION_ID=$(sed 's/\\\\x1b\\\\[[0-9;]*m//g' "$TEMP_OUTPUT" | grep -oE "session id: [0-9a-f-]+" | head -1 | cut -d' ' -f3)
   
 else
-  # CLAUDE: Real-time formatted JSONL log viewer (same approach as start.sh)
+  # CLAUDE: Resume session - append to existing log file
   # ISOLATION: --setting-sources "" blocks all CLAUDE.md files
+  # NOTE: Terminal is already open from start.sh, watching the log file
   
-  # Find the latest session log file
+  # Find the latest session log file (same one that Terminal is watching)
   SESSIONS_DIR="$AGENT_DIR/sessions"
   LOG_FILE=$(ls -t "$SESSIONS_DIR"/*.jsonl 2>/dev/null | head -1)
-  FORMATTER="$SUBAGENTS_DIR/format-log.js"
   
-  # If no log file exists, create new one
+  # If no log file exists (shouldn't happen in resume), create new one
   if [ -z "$LOG_FILE" ]; then
     mkdir -p "$SESSIONS_DIR"
     LOG_FILE="$SESSIONS_DIR/$(date +%Y%m%d_%H%M%S).jsonl"
     touch "$LOG_FILE"
   fi
   
-  # Open Terminal.app with tail -f on the log file
-  osascript -e "tell app \\\\"Terminal\\\\"
-    do script \\\\"tail -n 200 -f '$LOG_FILE' | node '$FORMATTER'\\\\"
-    activate
-  end tell" &>/dev/null &
-  
-  # Small delay to ensure Terminal opens before output starts
-  sleep 0.5
-  
-  # Run Claude with stream-json output, append to log file
+  # Run Claude with stream-json output, APPEND to existing log file
+  # Terminal that's already watching this file will see new output
   RESULT=$(claude -p "$ANSWER" \\
     --dangerously-skip-permissions \\
     --continue \\

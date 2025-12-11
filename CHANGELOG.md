@@ -2,10 +2,13 @@
 
 All notable changes to **Antigravity SubAgents** are documented here.
 
-## [0.0.32] - 2025-12-11
+## [0.0.33] - 2025-12-11
 
 ### Fixed
-- **Resume Script (Claude)** — `resume.sh` now appends to log file and opens Terminal with formatted output, same as `start.sh`
+- **Resume (Claude)** — No longer opens new Terminal; appends to existing log file that Terminal is already watching
+- Removes unnecessary delays and duplicate Terminal windows
+
+## [0.0.32] - 2025-12-11
 
 ## [0.0.31] - 2025-12-11
 
