@@ -2,6 +2,12 @@
 
 All notable changes to **Antigravity SubAgents** are documented here.
 
+## [0.0.31] - 2025-12-11
+
+### Fixed
+- **No ESM Warning** — `format-log.js` now uses CommonJS syntax to avoid Node.js module type warnings
+- **Increased tool_result Limit** — Tool results now show up to 300 characters (was 150) for better context
+
 ## [0.0.30] - 2025-12-11
 
 ### Changed

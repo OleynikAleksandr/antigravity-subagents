@@ -1,10 +1,11 @@
 /**
  * JSONL log formatter for Claude sessions
  * Parses Claude's JSONL output and displays it beautifully in terminal
+ * Uses CommonJS syntax for Node.js compatibility without ESM warnings
  */
 export const FORMAT_LOG_SCRIPT = `#!/usr/bin/env node
-import { createReadStream } from 'fs';
-import { createInterface } from 'readline';
+const { createReadStream } = require('fs');
+const { createInterface } = require('readline');
 
 const colors = {
   reset: '\\x1b[0m',
@@ -54,7 +55,8 @@ function processLine(line) {
         if (block.type === 'text') {
           console.log(colors.cyan + colors.bright + 'USER:' + colors.reset + ' ' + truncate(block.text, 300));
         } else if (block.type === 'tool_result') {
-          const result = truncate(typeof block.content === 'string' ? block.content : JSON.stringify(block.content), 150);
+          // Increased limit for tool results to show more context
+          const result = truncate(typeof block.content === 'string' ? block.content : JSON.stringify(block.content), 300);
           console.log(colors.gray + '  └─ RESULT:' + colors.reset + ' ' + result);
         }
       }
@@ -85,19 +87,21 @@ function processLine(line) {
   }
 }
 
-// Main
-const args = process.argv.slice(2);
-const input = args[0] ? createReadStream(args[0]) : process.stdin;
+// Main - using async IIFE for top-level await equivalent in CommonJS
+(async function() {
+  const args = process.argv.slice(2);
+  const input = args[0] ? createReadStream(args[0]) : process.stdin;
 
-const rl = createInterface({ input, crlfDelay: Infinity });
+  const rl = createInterface({ input, crlfDelay: Infinity });
 
-console.log('═'.repeat(60));
-console.log('Claude Agent Session Log');
-console.log('═'.repeat(60) + '\\n');
+  console.log('═'.repeat(60));
+  console.log('Claude Agent Session Log');
+  console.log('═'.repeat(60) + '\\n');
 
-for await (const line of rl) {
-  processLine(line);
-}
+  for await (const line of rl) {
+    processLine(line);
+  }
 
-console.log('\\n' + '═'.repeat(60));
+  console.log('\\n' + '═'.repeat(60));
+})();
 `;
