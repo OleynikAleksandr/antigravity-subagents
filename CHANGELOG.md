@@ -2,15 +2,16 @@
 
 All notable changes to **Antigravity SubAgents** are documented here.
 
+## [0.0.30] - 2025-12-11
+
+### Changed
+- **Unified Real-time Logging** — Claude SubAgents now use the same approach as Codex:
+  - Writes JSONL to `.subagents/<agent>/sessions/<timestamp>.jsonl`
+  - Terminal opens with known file path (no waiting/searching)
+  - Uses `--output-format stream-json --verbose` for real-time streaming
+  - Parses final `result` from JSONL for orchestrator response
+
 ## [0.0.29] - 2025-12-11
-
-### Added
-- **Real-time Logging (Claude)** — Claude SubAgents now open Terminal with formatted JSONL log viewer
-  - Uses `format-log.js` to parse Claude's session logs in `~/.claude/projects/`
-  - Displays thinking blocks (💭), tool calls (⚡), and results with ANSI colors
-  - Same experience as Codex SubAgents — real-time visibility into agent execution
-
-## [0.0.28] - 2025-12-11
 
 ### Fixed
 - **Real-time Logging (Codex)** — stderr now streams to log file in real-time using `tee` instead of being dumped at the end of execution
