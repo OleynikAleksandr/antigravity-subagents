@@ -2,6 +2,8 @@ import { chmod, mkdir, stat, symlink, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 
+import { FORMAT_LOG_SCRIPT } from "./format-log-content";
+
 /**
  * Content of start.sh script
  * Creates log file, opens Terminal with tail, runs SubAgent,
@@ -50,14 +52,35 @@ if [ "$VENDOR" = "codex" ]; then
   SESSION_ID=$(sed 's/\\x1b\\[[0-9;]*m//g' "$TEMP_OUTPUT" | grep -oE "session id: [0-9a-f-]+" | head -1 | cut -d' ' -f3)
   
 else
-  # CLAUDE: simple text output (Claude doesn't support verbose stderr like Codex)
+  # CLAUDE: Real-time formatted JSONL log viewer
   # ISOLATION: --setting-sources "" blocks all CLAUDE.md files
   # Credentials from macOS Keychain remain accessible
-  # No log writing - Claude prints only final result to stdout
+  
+  # Determine Claude's log directory for this working directory
+  CLAUDE_PROJECT_HASH=$(echo "$AGENT_DIR" | tr '/' '-')
+  CLAUDE_LOG_DIR="$HOME/.claude/projects/$CLAUDE_PROJECT_HASH"
+  FORMATTER="$SUBAGENTS_DIR/format-log.js"
+  
+  # Create log dir if needed
+  mkdir -p "$CLAUDE_LOG_DIR"
+  
+  # Touch a placeholder file so tail -f can start immediately
+  PLACEHOLDER="$CLAUDE_LOG_DIR/.waiting"
+  touch "$PLACEHOLDER"
+  
+  # Open Terminal.app with log watcher that finds the newest jsonl
+  osascript -e "tell app \\"Terminal\\"
+    do script \\"echo 'Waiting for Claude session...' && sleep 1 && LOGFILE=\\\\\\$(ls -t '$CLAUDE_LOG_DIR'/*.jsonl 2>/dev/null | head -1) && if [ -n \\\\\\\\\\\\\\"\\\\\\\\\\\\$LOGFILE\\\\\\\\\\\\\\" ]; then echo \\\\\\\\\\\\\\"Streaming: \\\\\\\\\\\\$LOGFILE\\\\\\\\\\\\\\" && tail -n 200 -f \\\\\\\\\\\\\\"\\\\\\\\\\\\$LOGFILE\\\\\\\\\\\\\\" | node '$FORMATTER'; else echo 'No log file found'; fi\\"
+    activate
+  end tell" &>/dev/null &
+  
+  # Run Claude (stdout = result for orchestrator)
   claude -p "First, read \${AGENT}.md. Then: $TASK" --dangerously-skip-permissions --setting-sources ""
   
-  # Claude doesn't output session_id in text mode
+  # Claude doesn't reliably output session_id in text mode
   SESSION_ID=""
+  
+  rm -f "$PLACEHOLDER"
 fi
 
 rm -f "$TEMP_OUTPUT"
@@ -127,20 +150,23 @@ fi
 `;
 
 /**
- * Ensure start.sh and resume.sh scripts exist in subagents directory
+ * Ensure start.sh, resume.sh and format-log.js scripts exist in subagents directory
  */
 export async function ensureScripts(subagentsDir: string): Promise<void> {
   await mkdir(subagentsDir, { recursive: true });
 
   const startPath = join(subagentsDir, "start.sh");
   const resumePath = join(subagentsDir, "resume.sh");
+  const formatterPath = join(subagentsDir, "format-log.js");
 
   await writeFile(startPath, START_SCRIPT, "utf-8");
   await writeFile(resumePath, RESUME_SCRIPT, "utf-8");
+  await writeFile(formatterPath, FORMAT_LOG_SCRIPT, "utf-8");
 
   // Make scripts executable
   await chmod(startPath, 0o755);
   await chmod(resumePath, 0o755);
+  await chmod(formatterPath, 0o755);
 }
 
 /**

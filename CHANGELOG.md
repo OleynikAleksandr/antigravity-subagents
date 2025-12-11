@@ -2,6 +2,14 @@
 
 All notable changes to **Antigravity SubAgents** are documented here.
 
+## [0.0.29] - 2025-12-11
+
+### Added
+- **Real-time Logging (Claude)** — Claude SubAgents now open Terminal with formatted JSONL log viewer
+  - Uses `format-log.js` to parse Claude's session logs in `~/.claude/projects/`
+  - Displays thinking blocks (💭), tool calls (⚡), and results with ANSI colors
+  - Same experience as Codex SubAgents — real-time visibility into agent execution
+
 ## [0.0.28] - 2025-12-11
 
 ### Fixed
