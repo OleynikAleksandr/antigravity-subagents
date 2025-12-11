@@ -133,14 +133,11 @@ if [ "$VENDOR" = "codex" ]; then
   # Append to log (same session)
   echo "=== [$AGENT] RESUME $(date +%H:%M:%S) ===" >> "$LOG_FILE"
   
-  CODEX_HOME="$AGENT_DIR/.codex" codex exec --dangerously-bypass-approvals-and-sandbox \\\\
-    resume "$SESSION_ID" "$ANSWER" 2>"$TEMP_OUTPUT"
-  
-  # Append stderr to log
-  cat "$TEMP_OUTPUT" >> "$LOG_FILE"
+  CODEX_HOME="$AGENT_DIR/.codex" codex exec --dangerously-bypass-approvals-and-sandbox \\
+    resume "$SESSION_ID" "$ANSWER" 2> >(tee "$TEMP_OUTPUT" >> "$LOG_FILE")
   
   # Extract new session_id if provided
-  NEW_SESSION_ID=$(sed 's/\\\\x1b\\\\[[0-9;]*m//g' "$TEMP_OUTPUT" | grep -oE "session id: [0-9a-f-]+" | head -1 | cut -d' ' -f3)
+  NEW_SESSION_ID=$(sed 's/\\x1b\\[[0-9;]*m//g' "$TEMP_OUTPUT" | grep -oE "session id: [0-9a-f-]+" | head -1 | cut -d' ' -f3)
   
 else
   # CLAUDE: Resume session - append to existing log file

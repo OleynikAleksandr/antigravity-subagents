@@ -1,7 +1,7 @@
 {
   "name": "antigravity-subagents",
   "displayName": "SubAgent Manager",
-  "description": "Manage Codex/Claude Sub-Agents via Antigravity IDE",
+  "description": "Керування субагентами Codex/Claude через Antigravity IDE",
   "version": "0.0.33",
   "publisher": "OleksandrOliinyk",
   "repository": {
